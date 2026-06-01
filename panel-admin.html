@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Administrador - Academia BALAM</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #1a1a1a;
+            border-bottom: 2px solid #FFD700;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .logo h1 {
+            color: #FFD700;
+            font-size: 24px;
+        }
+
+        .logo p {
+            color: #888888;
+            font-size: 12px;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .user-name {
+            color: #FFFFFF;
+        }
+
+        .btn-cerrar {
+            background: #333333;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-cerrar:hover {
+            background: #FFD700;
+            color: #000000;
+        }
+
+        .container {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: #0a0a0a;
+            border-right: 1px solid #333333;
+            padding: 30px 0;
+        }
+
+        .sidebar button {
+            width: 100%;
+            background: transparent;
+            border: none;
+            padding: 15px 25px;
+            text-align: left;
+            color: #CCCCCC;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar button:hover {
+            background: #1a1a1a;
+            color: #FFD700;
+        }
+
+        .sidebar button.activo {
+            background: #1a1a1a;
+            color: #FFD700;
+            border-left-color: #FFD700;
+        }
+
+        .content {
+            flex: 1;
+            padding: 30px;
+            background: #0d0d0d;
+        }
+
+        .titulo-seccion {
+            color: #FFD700;
+            margin-bottom: 25px;
+            font-size: 28px;
+            border-bottom: 2px solid #FFD700;
+            display: inline-block;
+            padding-bottom: 5px;
+        }
+
+        iframe {
+            width: 100%;
+            min-height: 600px;
+            border: none;
+            background: #0d0d0d;
+            border-radius: 12px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                display: flex;
+                overflow-x: auto;
+                padding: 15px;
+                gap: 10px;
+            }
+            .sidebar button {
+                width: auto;
+                white-space: nowrap;
+                border-left: none;
+                border-bottom: 3px solid transparent;
+            }
+            .sidebar button.activo {
+                border-left-color: transparent;
+                border-bottom-color: #FFD700;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div class="logo">
+        <h1>🏛️ ACADEMIA BALAM</h1>
+        <p>Panel de Administrador</p>
+    </div>
+    <div class="user-info">
+        <span class="user-name" id="userName">Cargando...</span>
+        <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <button class="activo" onclick="cargarSeccion('registro-alumnos.html', this)">📝 Registrar Alumno</button>
+        <button onclick="cargarSeccion('gestion-auxiliares.html', this)">👥 Gestionar Auxiliares</button>
+        <button onclick="cargarSeccion('horarios.html', this)">🕐 Horarios</button>
+        <button onclick="cargarSeccion('escanear-qr.html', this)">📷 Escanear QR</button>
+        <button onclick="cargarSeccion('reportes.html', this)">📊 Reportes</button>
+    </div>
+    <div class="content">
+        <h2 id="tituloSeccion" class="titulo-seccion">Registrar Alumno</h2>
+        <iframe id="contenidoFrame" src="registro-alumnos.html"></iframe>
+    </div>
+</div>
+
+<script>
+    // Configuración de Firebase (USANDO TUS DATOS REALES)
+    const firebaseConfig = {
+        apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
+        authDomain: "balam-4e843.firebaseapp.com",
+        projectId: "balam-4e843",
+        storageBucket: "balam-4e843.firebasestorage.app",
+        messagingSenderId: "633718462390",
+        appId: "1:633718462390:web:aaefbe4bf1cc3917fc5317"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+
+    let usuarioActual = null;
+
+    auth.onAuthStateChanged(async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
+        }
+        usuarioActual = user;
+        
+        const adminDoc = await db.collection('administradores').doc(user.uid).get();
+        if (adminDoc.exists) {
+            const nombre = adminDoc.data().Nombre || adminDoc.data().nombre || 'Administrador';
+            document.getElementById('userName').textContent = nombre;
+        } else {
+            document.getElementById('userName').textContent = user.email;
+        }
+    });
+
+    function cargarSeccion(url, boton) {
+        document.getElementById('contenidoFrame').src = url;
+        
+        document.querySelectorAll('.sidebar button').forEach(btn => {
+            btn.classList.remove('activo');
+        });
+        boton.classList.add('activo');
+        
+        let titulo = '';
+        if (url.includes('registro')) titulo = 'Registrar Alumno';
+        else if (url.includes('auxiliares')) titulo = 'Gestionar Auxiliares';
+        else if (url.includes('horarios')) titulo = 'Horarios';
+        else if (url.includes('escanear')) titulo = 'Escanear QR';
+        else if (url.includes('reportes')) titulo = 'Reportes';
+        else titulo = 'Panel de Control';
+        
+        document.getElementById('tituloSeccion').textContent = titulo;
+    }
+
+    function cerrarSesion() {
+        auth.signOut().then(() => {
+            window.location.href = 'login.html';
+        });
+    }
+</script>
+
+</body>
+</html>

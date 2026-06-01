@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Academia BALAM - Iniciar Sesión</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .login-container {
+            background: #1a1a1a;
+            border-radius: 20px;
+            padding: 40px 30px;
+            max-width: 450px;
+            width: 100%;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            border: 1px solid #FFD700;
+        }
+
+        .logo {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo img {
+            max-width: 120px;
+            height: auto;
+        }
+
+        h1 {
+            color: #FFD700;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .subtitulo {
+            color: #CCCCCC;
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #FFD700;
+            display: inline-block;
+            width: auto;
+            margin-left: auto;
+            margin-right: auto;
+            padding-bottom: 8px;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #FFD700;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            background: #2a2a2a;
+            border: 1px solid #555555;
+            border-radius: 10px;
+            color: #FFFFFF;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.3);
+            background: #333333;
+        }
+
+        input::placeholder {
+            color: #888888;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000000;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .mensaje-error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #FF4444;
+            color: #FF8888;
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+        }
+
+        .mensaje-cargando {
+            color: #FFD700;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            display: none;
+        }
+
+        .info {
+            text-align: center;
+            margin-top: 25px;
+            color: #888888;
+            font-size: 12px;
+        }
+
+        .disciplinas {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 1px solid #333333;
+        }
+
+        .badge {
+            background: #2a2a2a;
+            color: #FFD700;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            border: 1px solid #FFD700;
+        }
+
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 30px 20px;
+            }
+            h1 {
+                font-size: 24px;
+            }
+            button {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <div class="logo">
+        <!-- Cambia "logo.png" por la ruta de tu logo -->
+        <img src="logo.png" alt="Logo Academia BALAM" onerror="this.style.display='none'">
+    </div>
+    <h1>ACADEMIA BALAM</h1>
+    <div style="text-align: center;">
+        <div class="subtitulo">Iniciar Sesión</div>
+    </div>
+
+    <div class="input-group">
+        <label>📧 Correo Electrónico</label>
+        <input type="email" id="email" placeholder="tu@email.com" autocomplete="email">
+    </div>
+
+    <div class="input-group">
+        <label>🔒 Contraseña</label>
+        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button onclick="iniciarSesion()">INGRESAR</button>
+
+    <div id="mensajeError" class="mensaje-error"></div>
+    <div id="mensajeCargando" class="mensaje-cargando">Verificando credenciales...</div>
+
+    <div class="info">
+        ⚡ Acceso exclusivo para personal y estudiantes
+    </div>
+    <div class="disciplinas">
+        <span class="badge">KICK BOXING</span>
+        <span class="badge">BOX</span>
+        <span class="badge">TAEWONDO</span>
+        <span class="badge">PILATES</span>
+        <span class="badge">ZUMBA</span>
+        <span class="badge">ENTRENAMIENTO FUNCIONAL</span>
+    </div>
+</div>
+
+<script>
+    // ============================================
+    // TU CONFIGURACIÓN REAL DE FIREBASE
+    // ============================================
+    const firebaseConfig = {
+        apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
+        authDomain: "balam-4e843.firebaseapp.com",
+        projectId: "balam-4e843",
+        storageBucket: "balam-4e843.firebasestorage.app",
+        messagingSenderId: "633718462390",
+        appId: "1:633718462390:web:aaefbe4bf1cc3917fc5317"
+    };
+
+    // Inicializar Firebase
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.firestore();
+</script>
+
+<script>
+    // Elementos del DOM
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const btnLogin = document.querySelector('button');
+    const mensajeError = document.getElementById('mensajeError');
+    const mensajeCargando = document.getElementById('mensajeCargando');
+
+    // Permitir login con Enter
+    emailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') iniciarSesion();
+    });
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') iniciarSesion();
+    });
+
+    async function iniciarSesion() {
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+            mostrarError('Por favor, completa todos los campos');
+            return;
+        }
+
+        btnLogin.disabled = true;
+        mensajeCargando.style.display = 'block';
+        mensajeError.style.display = 'none';
+
+        try {
+            const userCredential = await auth.signInWithEmailAndPassword(email, password);
+            const user = userCredential.user;
+            const uid = user.uid;
+
+            let rol = null;
+            let documentoId = null;
+
+            const adminDoc = await db.collection('administradores').doc(uid).get();
+            if (adminDoc.exists) {
+                rol = adminDoc.data().Rol || adminDoc.data().rol;
+                documentoId = uid;
+            }
+
+            if (!rol) {
+                const auxDoc = await db.collection('auxiliares').doc(uid).get();
+                if (auxDoc.exists) {
+                    rol = auxDoc.data().Rol || auxDoc.data().rol;
+                    documentoId = uid;
+                }
+            }
+
+            if (!rol) {
+                const alumnoDoc = await db.collection('alumnos').doc(uid).get();
+                if (alumnoDoc.exists) {
+                    rol = alumnoDoc.data().Rol || alumnoDoc.data().rol || 'estudiante';
+                    documentoId = uid;
+                }
+            }
+
+            if (rol === 'administrador') {
+                window.location.href = 'panel-admin.html';
+            } else if (rol === 'auxiliar') {
+                window.location.href = 'panel-auxiliar.html';
+            } else if (rol === 'estudiante') {
+                window.location.href = 'panel-estudiante.html';
+            } else {
+                mostrarError('Usuario autenticado pero sin rol asignado. Contacta al administrador.');
+                await auth.signOut();
+                btnLogin.disabled = false;
+                mensajeCargando.style.display = 'none';
+            }
+
+        } catch (error) {
+            console.error('Error en login:', error);
+            let mensaje = '';
+            switch (error.code) {
+                case 'auth/user-not-found':
+                    mensaje = '❌ Usuario no encontrado';
+                    break;
+                case 'auth/wrong-password':
+                    mensaje = '❌ Contraseña incorrecta';
+                    break;
+                case 'auth/invalid-email':
+                    mensaje = '❌ Correo electrónico inválido';
+                    break;
+                case 'auth/too-many-requests':
+                    mensaje = '❌ Demasiados intentos. Intenta más tarde';
+                    break;
+                default:
+                    mensaje = '❌ Error: ' + error.message;
+            }
+            mostrarError(mensaje);
+            btnLogin.disabled = false;
+            mensajeCargando.style.display = 'none';
+        }
+    }
+
+    function mostrarError(mensaje) {
+        mensajeError.textContent = mensaje;
+        mensajeError.style.display = 'block';
+        setTimeout(() => {
+            mensajeError.style.display = 'none';
+        }, 4000);
+    }
+</script>
+
+</body>
+</html>
