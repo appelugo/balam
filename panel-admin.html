@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Panel Administrador - Academia BALAM</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
@@ -22,22 +22,22 @@
             min-height: 100vh;
         }
 
-        /* Header con gradiente */
+        /* Header */
         .header {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             border-bottom: 2px solid #FFD700;
-            padding: 20px 40px;
+            padding: 15px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            box-shadow: 0 5px 20px rgba(0,0,0,0.5);
+            gap: 15px;
         }
 
         .logo-area {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .logo-area img {
@@ -48,21 +48,15 @@
 
         .logo-area h1 {
             color: #FFD700;
-            font-size: 28px;
-            text-shadow: 0 0 10px rgba(255,215,0,0.3);
-        }
-
-        .logo-area p {
-            color: #888;
-            font-size: 12px;
+            font-size: 22px;
         }
 
         .user-info {
             display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 15px;
             background: rgba(255,215,0,0.1);
-            padding: 10px 20px;
+            padding: 8px 18px;
             border-radius: 50px;
             border: 1px solid #FFD700;
         }
@@ -70,120 +64,94 @@
         .user-name {
             color: #FFD700;
             font-weight: bold;
+            font-size: 14px;
         }
 
         .btn-cerrar {
             background: transparent;
             color: #FFD700;
             border: 1px solid #FFD700;
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 25px;
             cursor: pointer;
+            font-size: 13px;
             transition: all 0.3s;
         }
 
         .btn-cerrar:hover {
             background: #FFD700;
             color: #000;
-            transform: scale(1.05);
         }
 
         /* Contenedor principal */
         .container {
-            padding: 40px;
+            padding: 30px 20px;
             max-width: 1400px;
             margin: 0 auto;
         }
 
-        /* Bienvenida */
         .welcome {
             text-align: center;
-            margin-bottom: 50px;
+            margin-bottom: 40px;
         }
 
         .welcome h2 {
             color: #FFD700;
-            font-size: 32px;
-            margin-bottom: 10px;
+            font-size: 26px;
+            margin-bottom: 8px;
         }
 
         .welcome p {
-            color: #ccc;
-            font-size: 16px;
+            color: #aaa;
+            font-size: 14px;
         }
 
         /* Grid de tarjetas */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 30px;
-            margin-bottom: 50px;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
         }
 
-        /* Tarjeta individual */
         .card {
             background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
             border-radius: 20px;
-            padding: 30px 20px;
+            padding: 28px 20px;
             text-align: center;
             cursor: pointer;
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transition: all 0.3s ease;
             border: 1px solid #333;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.1), transparent);
-            transition: left 0.5s;
-        }
-
-        .card:hover::before {
-            left: 100%;
         }
 
         .card:hover {
-            transform: translateY(-15px) scale(1.02);
+            transform: translateY(-8px);
             border-color: #FFD700;
-            box-shadow: 0 20px 40px rgba(255,215,0,0.2);
+            box-shadow: 0 15px 30px rgba(255,215,0,0.15);
         }
 
         .card-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            display: inline-block;
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            font-size: 48px;
+            margin-bottom: 15px;
         }
 
         .card h3 {
             color: #FFD700;
-            font-size: 22px;
-            margin-bottom: 15px;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
 
         .card p {
             color: #aaa;
-            font-size: 14px;
-            line-height: 1.5;
+            font-size: 13px;
         }
 
-        /* Área de contenido dinámico */
+        /* Área de contenido */
         .content-area {
             background: rgba(26,26,26,0.8);
             border-radius: 20px;
-            padding: 30px;
-            margin-top: 30px;
+            padding: 25px;
+            margin-top: 20px;
             border: 1px solid #333;
             backdrop-filter: blur(10px);
         }
@@ -192,14 +160,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 2px solid #FFD700;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .content-header h3 {
             color: #FFD700;
-            font-size: 24px;
+            font-size: 22px;
         }
 
         .close-content {
@@ -207,7 +177,7 @@
             border: none;
             color: #FFD700;
             padding: 8px 20px;
-            border-radius: 20px;
+            border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -219,56 +189,42 @@
 
         iframe {
             width: 100%;
-            min-height: 500px;
+            min-height: 550px;
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             background: transparent;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
             .header {
-                padding: 15px 20px;
+                padding: 12px 20px;
+            }
+            .logo-area h1 {
+                font-size: 18px;
             }
             .container {
-                padding: 20px;
+                padding: 20px 15px;
             }
             .cards-grid {
-                gap: 20px;
+                gap: 15px;
             }
             .card {
                 padding: 20px 15px;
             }
             .card-icon {
-                font-size: 40px;
+                font-size: 36px;
             }
             .card h3 {
-                font-size: 18px;
+                font-size: 16px;
+            }
+            .content-area {
+                padding: 15px;
+            }
+            iframe {
+                min-height: 450px;
             }
         }
-
-        /* Animación de entrada */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card {
-            animation: fadeInUp 0.6s ease-out forwards;
-            opacity: 0;
-        }
-
-        .card:nth-child(1) { animation-delay: 0.1s; }
-        .card:nth-child(2) { animation-delay: 0.2s; }
-        .card:nth-child(3) { animation-delay: 0.3s; }
-        .card:nth-child(4) { animation-delay: 0.4s; }
-        .card:nth-child(5) { animation-delay: 0.5s; }
     </style>
 </head>
 <body>
@@ -276,52 +232,49 @@
 <div class="header">
     <div class="logo-area">
         <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
-        <div>
-            <h1>🏛️ ACADEMIA BALAM</h1>
-            <p>Panel de Control - Administrador</p>
-        </div>
+        <h1>ACADEMIA BALAM</h1>
     </div>
     <div class="user-info">
         <span class="user-name" id="userName">Cargando...</span>
-        <button class="btn-cerrar" onclick="cerrarSesion()">🚪 Cerrar Sesión</button>
+        <button class="btn-cerrar" onclick="cerrarSesion()">Cerrar Sesión</button>
     </div>
 </div>
 
 <div class="container">
     <div class="welcome">
-        <h2>✨ ¡Bienvenido, Administrador! ✨</h2>
-        <p>Gestiona tu academia desde un solo lugar</p>
+        <h2>✨ Panel de Control ✨</h2>
+        <p>Selecciona una opción para comenzar</p>
     </div>
 
     <div class="cards-grid">
         <div class="card" onclick="cargarSeccion('registro-alumnos.html', '📝 Registrar Alumno')">
             <div class="card-icon">👨‍🎓</div>
             <h3>Registrar Alumno</h3>
-            <p>Agrega nuevos estudiantes con foto y datos completos</p>
+            <p>Nuevo estudiante con usuario y QR</p>
         </div>
 
-        <div class="card" onclick="cargarSeccion('gestion-auxiliares.html', '👥 Gestionar Auxiliares')">
+        <div class="card" onclick="cargarSeccion('registro-auxiliar.html', '👥 Registrar Auxiliar')">
             <div class="card-icon">👥</div>
-            <h3>Gestionar Auxiliares</h3>
-            <p>Administra el personal de apoyo</p>
+            <h3>Registrar Auxiliar</h3>
+            <p>Personal de apoyo o instructores</p>
         </div>
 
-        <div class="card" onclick="cargarSeccion('horarios.html', '🕐 Horarios')">
+        <div class="card" onclick="cargarSeccion('horarios.html', '📅 Horarios')">
             <div class="card-icon">📅</div>
             <h3>Horarios</h3>
-            <p>Crea y edita horarios por disciplina</p>
+            <p>Gestionar horarios por disciplina</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('escanear-qr.html', '📷 Escanear QR')">
             <div class="card-icon">📱</div>
             <h3>Escanear QR</h3>
-            <p>Toma asistencia escaneando el código de alumnos</p>
+            <p>Tomar asistencia escaneando</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('reportes.html', '📊 Reportes')">
             <div class="card-icon">📈</div>
             <h3>Reportes</h3>
-            <p>Visualiza estadísticas y asistencias</p>
+            <p>Ver estadísticas y asistencias</p>
         </div>
     </div>
 
@@ -348,15 +301,11 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    let usuarioActual = null;
-
     auth.onAuthStateChanged(async (user) => {
         if (!user) {
             window.location.href = 'login.html';
             return;
         }
-        usuarioActual = user;
-        
         try {
             const adminDoc = await db.collection('administradores').doc(user.uid).get();
             if (adminDoc.exists) {
@@ -366,7 +315,7 @@
                 document.getElementById('userName').textContent = user.email;
             }
         } catch (error) {
-            console.error('Error al obtener datos:', error);
+            console.error('Error:', error);
             document.getElementById('userName').textContent = user.email;
         }
     });
@@ -379,8 +328,6 @@
         tituloElem.textContent = titulo;
         iframe.src = url;
         contenidoDiv.style.display = 'block';
-        
-        // Scroll suave al contenido
         contenidoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
