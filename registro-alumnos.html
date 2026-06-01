@@ -29,7 +29,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -51,7 +50,6 @@
             margin-top: 5px;
         }
 
-        /* Tarjeta principal */
         .card {
             background: #1a1a1a;
             border-radius: 28px;
@@ -61,7 +59,7 @@
             animation: fadeInUp 0.5s ease;
         }
 
-        /* Sección de foto */
+        /* Foto */
         .foto-section {
             background: linear-gradient(135deg, #0f0f0f 0%, #151515 100%);
             padding: 20px;
@@ -92,7 +90,6 @@
             justify-content: center;
             cursor: pointer;
             transition: all 0.3s;
-            position: relative;
         }
 
         .foto-preview:hover {
@@ -160,6 +157,12 @@
             color: #ff6666;
         }
 
+        label .opcional {
+            color: #888;
+            font-weight: normal;
+            font-size: 10px;
+        }
+
         input, select {
             width: 100%;
             padding: 12px 14px;
@@ -182,6 +185,23 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
+        }
+
+        .separator {
+            height: 1px;
+            background: #333;
+            margin: 20px 0 15px 0;
+        }
+
+        .separator span {
+            display: block;
+            text-align: center;
+            color: #FFD700;
+            font-size: 11px;
+            background: #1a1a1a;
+            width: fit-content;
+            margin: -8px auto 0;
+            padding: 0 12px;
         }
 
         /* Usuario generado */
@@ -208,7 +228,6 @@
             letter-spacing: 2px;
         }
 
-        /* Botón registrar */
         .btn-registrar {
             width: 100%;
             padding: 14px;
@@ -232,7 +251,6 @@
             box-shadow: 0 5px 20px rgba(255,215,0,0.4);
         }
 
-        /* Mensajes */
         .mensaje {
             padding: 12px;
             border-radius: 14px;
@@ -255,27 +273,14 @@
             color: #ff8888;
         }
 
-        /* Animaciones */
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         @keyframes fadeIn {
@@ -283,25 +288,12 @@
             to { opacity: 1; }
         }
 
-        /* Responsive */
         @media (max-width: 500px) {
-            body {
-                padding: 12px;
-            }
-            .row {
-                grid-template-columns: 1fr;
-                gap: 0;
-            }
-            .form-section {
-                padding: 18px;
-            }
-            .foto-preview {
-                width: 100px;
-                height: 100px;
-            }
-            .usuario-value {
-                font-size: 16px;
-            }
+            body { padding: 12px; }
+            .row { grid-template-columns: 1fr; gap: 0; }
+            .form-section { padding: 18px; }
+            .foto-preview { width: 100px; height: 100px; }
+            .usuario-value { font-size: 16px; }
         }
     </style>
 </head>
@@ -314,26 +306,21 @@
     </div>
 
     <div class="card">
-        <!-- SECCIÓN FOTO -->
+        <!-- FOTO -->
         <div class="foto-section">
-            <div class="foto-title">
-                📸 <span>FOTO DEL ALUMNO</span> 📸
-            </div>
+            <div class="foto-title">📸 FOTO DEL ALUMNO</div>
             <div class="foto-preview" id="fotoPreview" onclick="subirFoto()">
                 <div class="foto-placeholder" id="fotoPlaceholder">📷</div>
             </div>
             <div class="btn-foto-group">
-                <button type="button" class="btn-foto" onclick="tomarFoto()">
-                    📸 Tomar foto
-                </button>
-                <button type="button" class="btn-foto" onclick="subirFoto()">
-                    🖼️ Subir imagen
-                </button>
+                <button type="button" class="btn-foto" onclick="tomarFoto()">📸 Tomar foto</button>
+                <button type="button" class="btn-foto" onclick="subirFoto()">🖼️ Subir imagen</button>
             </div>
         </div>
 
         <!-- FORMULARIO -->
         <div class="form-section">
+            <!-- Datos personales -->
             <div class="row">
                 <div class="form-group">
                     <label>NOMBRE(S) <span class="required">*</span></label>
@@ -362,6 +349,27 @@
             </div>
 
             <div class="form-group">
+                <label>FECHA DE NACIMIENTO <span class="required">*</span></label>
+                <input type="date" id="fechaNacimiento">
+            </div>
+
+            <!-- Teléfonos de emergencia -->
+            <div class="separator"><span>📞 CONTACTOS DE EMERGENCIA</span></div>
+
+            <div class="form-group">
+                <label>TELÉFONO EMERGENCIA 1 <span class="required">*</span></label>
+                <input type="tel" id="emergencia1" placeholder="55 9876 5432">
+            </div>
+
+            <div class="form-group">
+                <label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label>
+                <input type="tel" id="emergencia2" placeholder="55 8765 4321">
+            </div>
+
+            <!-- Disciplina y contraseña -->
+            <div class="separator"><span>🥋 DATOS ACADÉMICOS</span></div>
+
+            <div class="form-group">
                 <label>DISCIPLINA <span class="required">*</span></label>
                 <select id="disciplina">
                     <option value="">Seleccionar disciplina</option>
@@ -379,7 +387,7 @@
                 <input type="password" id="password" placeholder="Mínimo 6 caracteres">
             </div>
 
-            <!-- USUARIO GENERADO -->
+            <!-- Usuario generado -->
             <div id="usuarioPreview" class="usuario-card" style="display: none;">
                 <div class="usuario-label">👤 USUARIO GENERADO</div>
                 <div class="usuario-value" id="usuarioGenerado"></div>
@@ -396,7 +404,6 @@
 </div>
 
 <script>
-    // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
         authDomain: "balam-4e843.firebaseapp.com",
@@ -416,7 +423,6 @@
     let fotoFile = null;
     let fotoDataURL = null;
 
-    // Generar usuario automáticamente
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const ap = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
@@ -435,7 +441,6 @@
     document.getElementById('nombre').addEventListener('input', generarUsuario);
     document.getElementById('apellidoPaterno').addEventListener('input', generarUsuario);
 
-    // Tomar foto con cámara
     function tomarFoto() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -445,7 +450,6 @@
         input.click();
     }
 
-    // Subir foto desde galería
     function subirFoto() {
         const input = document.createElement('input');
         input.type = 'file';
@@ -462,7 +466,6 @@
         reader.onload = (event) => {
             fotoDataURL = event.target.result;
             const preview = document.getElementById('fotoPreview');
-            const placeholder = document.getElementById('fotoPlaceholder');
             preview.innerHTML = `<img src="${fotoDataURL}" alt="Foto perfil">`;
         };
         reader.readAsDataURL(file);
@@ -474,13 +477,16 @@
         const apMaterno = document.getElementById('apellidoMaterno').value.trim().toUpperCase();
         const telefono = document.getElementById('telefono').value.trim();
         const email = document.getElementById('email').value.trim();
+        const fechaNacimiento = document.getElementById('fechaNacimiento').value;
+        const emergencia1 = document.getElementById('emergencia1').value.trim();
+        const emergencia2 = document.getElementById('emergencia2').value.trim();
         const disciplina = document.getElementById('disciplina').value;
         const password = document.getElementById('password').value;
         const usuario = generarUsuario();
 
-        // Validaciones
-        if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !disciplina || !password) {
-            mostrarMensaje('❌ Por favor, completa todos los campos obligatorios', 'error');
+        // Validar campos obligatorios
+        if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1 || !disciplina || !password) {
+            mostrarMensaje('❌ Completa todos los campos obligatorios (*)', 'error');
             return;
         }
 
@@ -492,11 +498,9 @@
         mostrarMensaje('⏳ Registrando alumno...', 'exito');
 
         try {
-            // Crear usuario en Authentication
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
 
-            // Subir foto a Storage si existe
             let fotoURL = '';
             if (fotoFile) {
                 const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
@@ -504,7 +508,6 @@
                 fotoURL = await storageRef.getDownloadURL();
             }
 
-            // Guardar en Firestore
             const alumnoData = {
                 uid: uid,
                 usuario: usuario,
@@ -513,6 +516,9 @@
                 apellidoMaterno: apMaterno,
                 telefono: telefono,
                 email: email,
+                fechaNacimiento: fechaNacimiento,
+                telefonoEmergencia1: emergencia1,
+                telefonoEmergencia2: emergencia2 || '',
                 disciplina: disciplina,
                 rol: 'estudiante',
                 activo: true,
@@ -522,22 +528,24 @@
 
             await db.collection('alumnos').doc(uid).set(alumnoData);
 
-            mostrarMensaje(`✅ ¡ALUMNO REGISTRADO CON ÉXITO!<br><br>📧 Email: ${email}<br>👤 Usuario: ${usuario}<br>🔑 Contraseña: ${password}`, 'exito');
+            mostrarMensaje(`✅ ¡ALUMNO REGISTRADO!<br><br>📧 Email: ${email}<br>👤 Usuario: ${usuario}<br>🔑 Contraseña: ${password}`, 'exito');
 
-            // Limpiar formulario
             setTimeout(() => {
                 document.getElementById('nombre').value = '';
                 document.getElementById('apellidoPaterno').value = '';
                 document.getElementById('apellidoMaterno').value = '';
                 document.getElementById('telefono').value = '';
                 document.getElementById('email').value = '';
+                document.getElementById('fechaNacimiento').value = '';
+                document.getElementById('emergencia1').value = '';
+                document.getElementById('emergencia2').value = '';
                 document.getElementById('disciplina').value = '';
                 document.getElementById('password').value = '';
                 document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
                 document.getElementById('usuarioPreview').style.display = 'none';
                 fotoFile = null;
                 fotoDataURL = null;
-            }, 3000);
+            }, 4000);
 
         } catch (error) {
             console.error('Error:', error);
