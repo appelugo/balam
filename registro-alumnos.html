@@ -3,220 +3,471 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Registrar Alumno</title>
+    <title>Registrar Alumno - Academia BALAM</title>
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
+    
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #0a0a0a;
-            color: #fff;
-            padding: 16px;
-        }
-        .form-container {
-            max-width: 500px;
-            margin: 0 auto;
-            background: #1a1a1a;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            min-height: 100vh;
             padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #FFD700;
         }
-        h2 { color: #FFD700; margin-bottom: 20px; text-align: center; font-size: 22px; }
-        
-        .form-group { margin-bottom: 14px; }
-        label { display: block; color: #FFD700; margin-bottom: 5px; font-size: 12px; font-weight: 500; }
-        input, select {
-            width: 100%;
-            padding: 10px 12px;
-            background: #2a2a2a;
-            border: 1px solid #444;
-            border-radius: 10px;
-            color: #fff;
-            font-size: 14px;
+
+        .container {
+            max-width: 550px;
+            margin: 0 auto;
         }
-        input:focus, select:focus { outline: none; border-color: #FFD700; }
-        
-        .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        
-        /* Área de foto */
-        .foto-area {
-            background: #111;
-            border: 2px dashed #FFD700;
-            border-radius: 16px;
-            padding: 15px;
+
+        /* Header */
+        .header {
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 25px;
+            animation: fadeInDown 0.5s ease;
         }
-        .foto-preview {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: #2a2a2a;
-            margin: 0 auto 12px;
+
+        .header h1 {
+            color: #FFD700;
+            font-size: 26px;
             display: flex;
             align-items: center;
             justify-content: center;
-            overflow: hidden;
-            border: 2px solid #FFD700;
+            gap: 10px;
         }
+
+        .header p {
+            color: #aaa;
+            font-size: 13px;
+            margin-top: 5px;
+        }
+
+        /* Tarjeta principal */
+        .card {
+            background: #1a1a1a;
+            border-radius: 28px;
+            border: 1px solid #FFD700;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: fadeInUp 0.5s ease;
+        }
+
+        /* Sección de foto */
+        .foto-section {
+            background: linear-gradient(135deg, #0f0f0f 0%, #151515 100%);
+            padding: 20px;
+            text-align: center;
+            border-bottom: 1px solid #333;
+        }
+
+        .foto-title {
+            color: #FFD700;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .foto-preview {
+            width: 130px;
+            height: 130px;
+            margin: 0 auto 15px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            border: 3px solid #FFD700;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .foto-preview:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+        }
+
         .foto-preview img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .foto-preview .sin-foto {
-            color: #888;
-            font-size: 40px;
+
+        .foto-placeholder {
+            font-size: 55px;
+            color: #555;
         }
+
+        .btn-foto-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
         .btn-foto {
-            background: #333;
+            background: #2a2a2a;
+            border: 1px solid #FFD700;
+            padding: 8px 18px;
+            border-radius: 30px;
             color: #FFD700;
-            border: 1px solid #FFD700;
-            padding: 8px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 12px;
-            margin: 5px;
-        }
-        
-        .usuario-preview {
-            background: rgba(255,215,0,0.1);
-            border: 1px solid #FFD700;
-            padding: 10px;
-            border-radius: 10px;
-            margin: 12px 0;
-            text-align: center;
             font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
-        
-        button[type="button"] {
-            width: 100%;
-            padding: 12px;
-            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+
+        .btn-foto:hover {
+            background: #FFD700;
             color: #000;
+            transform: translateY(-2px);
+        }
+
+        /* Formulario */
+        .form-section {
+            padding: 22px;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            color: #FFD700;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        label .required {
+            color: #ff6666;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 14px;
+            background: #252525;
+            border: 1px solid #3a3a3a;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #FFD700;
+            background: #2a2a2a;
+            box-shadow: 0 0 8px rgba(255,215,0,0.2);
+        }
+
+        .row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        /* Usuario generado */
+        .usuario-card {
+            background: linear-gradient(135deg, #1a2a1a 0%, #0f1a0f 100%);
+            border: 1px solid #FFD700;
+            border-radius: 16px;
+            padding: 12px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .usuario-label {
+            font-size: 11px;
+            color: #FFD700;
+            letter-spacing: 1px;
+        }
+
+        .usuario-value {
+            font-size: 20px;
+            font-weight: bold;
+            color: #FFD700;
+            font-family: monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Botón registrar */
+        .btn-registrar {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none;
-            border-radius: 12px;
+            border-radius: 16px;
             font-size: 16px;
             font-weight: bold;
+            color: #000;
             cursor: pointer;
+            transition: all 0.3s;
             margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        
-        .mensaje { padding: 10px; border-radius: 10px; margin-top: 15px; text-align: center; font-size: 13px; display: none; }
-        .exito { background: rgba(0,255,0,0.2); border: 1px solid #0f0; color: #0f0; }
-        .error { background: rgba(255,0,0,0.2); border: 1px solid #f00; color: #f88; }
-        
+
+        .btn-registrar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+
+        /* Mensajes */
+        .mensaje {
+            padding: 12px;
+            border-radius: 14px;
+            margin-top: 15px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .exito {
+            background: rgba(0, 255, 0, 0.15);
+            border: 1px solid #00ff00;
+            color: #00ff88;
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.15);
+            border: 1px solid #ff4444;
+            color: #ff8888;
+        }
+
+        /* Animaciones */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Responsive */
         @media (max-width: 500px) {
-            .row { grid-template-columns: 1fr; gap: 0; }
-            .form-container { padding: 16px; }
-            input, select { padding: 8px 10px; font-size: 13px; }
-            .foto-preview { width: 90px; height: 90px; }
+            body {
+                padding: 12px;
+            }
+            .row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .form-section {
+                padding: 18px;
+            }
+            .foto-preview {
+                width: 100px;
+                height: 100px;
+            }
+            .usuario-value {
+                font-size: 16px;
+            }
         }
     </style>
 </head>
 <body>
-<div class="form-container">
-    <h2>📝 REGISTRAR ALUMNO</h2>
-    
-    <!-- Área de foto -->
-    <div class="foto-area">
-        <div class="foto-preview" id="fotoPreview">
-            <div class="sin-foto">📷</div>
+
+<div class="container">
+    <div class="header">
+        <h1>📝 REGISTRAR ALUMNO</h1>
+        <p>Completa los datos del nuevo estudiante</p>
+    </div>
+
+    <div class="card">
+        <!-- SECCIÓN FOTO -->
+        <div class="foto-section">
+            <div class="foto-title">
+                📸 <span>FOTO DEL ALUMNO</span> 📸
+            </div>
+            <div class="foto-preview" id="fotoPreview" onclick="subirFoto()">
+                <div class="foto-placeholder" id="fotoPlaceholder">📷</div>
+            </div>
+            <div class="btn-foto-group">
+                <button type="button" class="btn-foto" onclick="tomarFoto()">
+                    📸 Tomar foto
+                </button>
+                <button type="button" class="btn-foto" onclick="subirFoto()">
+                    🖼️ Subir imagen
+                </button>
+            </div>
         </div>
-        <input type="file" id="fotoInput" accept="image/*" style="display:none;">
-        <button type="button" class="btn-foto" onclick="capturarFoto()">📸 Tomar foto</button>
-        <button type="button" class="btn-foto" onclick="subirFoto()">🖼️ Subir imagen</button>
+
+        <!-- FORMULARIO -->
+        <div class="form-section">
+            <div class="row">
+                <div class="form-group">
+                    <label>NOMBRE(S) <span class="required">*</span></label>
+                    <input type="text" id="nombre" placeholder="Juan Carlos">
+                </div>
+                <div class="form-group">
+                    <label>APELLIDO PATERNO <span class="required">*</span></label>
+                    <input type="text" id="apellidoPaterno" placeholder="García">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>APELLIDO MATERNO <span class="required">*</span></label>
+                <input type="text" id="apellidoMaterno" placeholder="López">
+            </div>
+
+            <div class="row">
+                <div class="form-group">
+                    <label>TELÉFONO <span class="required">*</span></label>
+                    <input type="tel" id="telefono" placeholder="55 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label>EMAIL <span class="required">*</span></label>
+                    <input type="email" id="email" placeholder="alumno@ejemplo.com">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>DISCIPLINA <span class="required">*</span></label>
+                <select id="disciplina">
+                    <option value="">Seleccionar disciplina</option>
+                    <option value="ENTRENAMIENTO FUNCIONAL">🏋️ ENTRENAMIENTO FUNCIONAL</option>
+                    <option value="ZUMBA">💃 ZUMBA</option>
+                    <option value="PILATES">🧘 PILATES</option>
+                    <option value="TAEWONDO">🥋 TAEWONDO</option>
+                    <option value="BOX">🥊 BOX</option>
+                    <option value="KICK BOXING">🦵 KICK BOXING</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>CONTRASEÑA <span class="required">*</span></label>
+                <input type="password" id="password" placeholder="Mínimo 6 caracteres">
+            </div>
+
+            <!-- USUARIO GENERADO -->
+            <div id="usuarioPreview" class="usuario-card" style="display: none;">
+                <div class="usuario-label">👤 USUARIO GENERADO</div>
+                <div class="usuario-value" id="usuarioGenerado"></div>
+                <div style="font-size: 10px; color: #888; margin-top: 5px;">Este será su usuario para iniciar sesión</div>
+            </div>
+
+            <button class="btn-registrar" onclick="registrarAlumno()">
+                ✅ REGISTRAR ALUMNO
+            </button>
+
+            <div id="mensaje" class="mensaje"></div>
+        </div>
     </div>
-    
-    <div class="row">
-        <div class="form-group"><label>NOMBRE(S) *</label><input type="text" id="nombre" placeholder="Ej: Juan Carlos"></div>
-        <div class="form-group"><label>APELLIDO PATERNO *</label><input type="text" id="apellidoPaterno" placeholder="Ej: García"></div>
-    </div>
-    <div class="form-group"><label>APELLIDO MATERNO *</label><input type="text" id="apellidoMaterno" placeholder="Ej: López"></div>
-    
-    <div class="row">
-        <div class="form-group"><label>TELÉFONO *</label><input type="tel" id="telefono" placeholder="55 1234 5678"></div>
-        <div class="form-group"><label>EMAIL *</label><input type="email" id="email" placeholder="alumno@ejemplo.com"></div>
-    </div>
-    
-    <div class="form-group"><label>DISCIPLINA *</label>
-        <select id="disciplina">
-            <option value="">Seleccionar...</option>
-            <option value="ENTRENAMIENTO FUNCIONAL">ENTRENAMIENTO FUNCIONAL</option>
-            <option value="ZUMBA">ZUMBA</option>
-            <option value="PILATES">PILATES</option>
-            <option value="TAEWONDO">TAEWONDO</option>
-            <option value="BOX">BOX</option>
-            <option value="KICK BOXING">KICK BOXING</option>
-        </select>
-    </div>
-    
-    <div class="form-group"><label>CONTRASEÑA *</label><input type="password" id="password" placeholder="Mínimo 6 caracteres"></div>
-    
-    <div id="usuarioPreview" class="usuario-preview" style="display:none;">👤 USUARIO: <strong id="usuarioGenerado"></strong></div>
-    
-    <button type="button" onclick="registrarAlumno()">✅ REGISTRAR ALUMNO</button>
-    <div id="mensaje" class="mensaje"></div>
 </div>
 
 <script>
-    if (typeof firebase === 'undefined') {
-        const firebaseConfig = {
-            apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
-            authDomain: "balam-4e843.firebaseapp.com",
-            projectId: "balam-4e843",
-            storageBucket: "balam-4e843.firebasestorage.app",
-            messagingSenderId: "633718462390",
-            appId: "1:633718462390:web:aaefbe4bf1cc3917fc5317"
-        };
+    // Configuración de Firebase
+    const firebaseConfig = {
+        apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
+        authDomain: "balam-4e843.firebaseapp.com",
+        projectId: "balam-4e843",
+        storageBucket: "balam-4e843.firebasestorage.app",
+        messagingSenderId: "633718462390",
+        appId: "1:633718462390:web:aaefbe4bf1cc3917fc5317"
+    };
+
+    if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
     const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
-    
+
+    let fotoFile = null;
     let fotoDataURL = null;
-    
+
+    // Generar usuario automáticamente
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const ap = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
+        
         if (nombre && ap) {
             const usuario = nombre.charAt(0) + ap;
             document.getElementById('usuarioGenerado').textContent = usuario;
             document.getElementById('usuarioPreview').style.display = 'block';
             return usuario;
+        } else {
+            document.getElementById('usuarioPreview').style.display = 'none';
+            return null;
         }
-        document.getElementById('usuarioPreview').style.display = 'none';
-        return null;
     }
-    
+
     document.getElementById('nombre').addEventListener('input', generarUsuario);
     document.getElementById('apellidoPaterno').addEventListener('input', generarUsuario);
-    
-    function capturarFoto() {
-        const input = document.getElementById('fotoInput');
-        input.setAttribute('capture', 'environment');
+
+    // Tomar foto con cámara
+    function tomarFoto() {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.capture = 'environment';
+        input.onchange = (e) => procesarFoto(e.target.files[0]);
         input.click();
     }
-    
+
+    // Subir foto desde galería
     function subirFoto() {
-        const input = document.getElementById('fotoInput');
-        input.removeAttribute('capture');
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => procesarFoto(e.target.files[0]);
         input.click();
     }
-    
-    document.getElementById('fotoInput').addEventListener('change', (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                fotoDataURL = event.target.result;
-                const preview = document.getElementById('fotoPreview');
-                preview.innerHTML = `<img src="${fotoDataURL}" alt="Foto">`;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-    
+
+    function procesarFoto(file) {
+        if (!file) return;
+        
+        fotoFile = file;
+        const reader = new FileReader();
+        reader.onload = (event) => {
+            fotoDataURL = event.target.result;
+            const preview = document.getElementById('fotoPreview');
+            const placeholder = document.getElementById('fotoPlaceholder');
+            preview.innerHTML = `<img src="${fotoDataURL}" alt="Foto perfil">`;
+        };
+        reader.readAsDataURL(file);
+    }
+
     async function registrarAlumno() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const apPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
@@ -226,59 +477,90 @@
         const disciplina = document.getElementById('disciplina').value;
         const password = document.getElementById('password').value;
         const usuario = generarUsuario();
-        
+
+        // Validaciones
         if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !disciplina || !password) {
-            mostrarMensaje('❌ Completa todos los campos obligatorios', 'error');
+            mostrarMensaje('❌ Por favor, completa todos los campos obligatorios', 'error');
             return;
         }
+
         if (password.length < 6) {
             mostrarMensaje('❌ La contraseña debe tener al menos 6 caracteres', 'error');
             return;
         }
-        
+
         mostrarMensaje('⏳ Registrando alumno...', 'exito');
-        
+
         try {
+            // Crear usuario en Authentication
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
-            
+
+            // Subir foto a Storage si existe
             let fotoURL = '';
-            if (fotoDataURL) {
-                const response = await fetch(fotoDataURL);
-                const blob = await response.blob();
+            if (fotoFile) {
                 const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
-                await storageRef.put(blob);
+                await storageRef.put(fotoFile);
                 fotoURL = await storageRef.getDownloadURL();
             }
-            
+
+            // Guardar en Firestore
             const alumnoData = {
-                uid, usuario, nombre, apellidoPaterno: apPaterno, apellidoMaterno: apMaterno,
-                telefono, email, disciplina, rol: 'estudiante', activo: true,
+                uid: uid,
+                usuario: usuario,
+                nombre: nombre,
+                apellidoPaterno: apPaterno,
+                apellidoMaterno: apMaterno,
+                telefono: telefono,
+                email: email,
+                disciplina: disciplina,
+                rol: 'estudiante',
+                activo: true,
                 fotoURL: fotoURL,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
             };
+
             await db.collection('alumnos').doc(uid).set(alumnoData);
-            
-            mostrarMensaje(`✅ ¡REGISTRADO!<br>📧 ${email}<br>👤 Usuario: ${usuario}<br>🔑 Contraseña: ${password}`, 'exito');
-            
+
+            mostrarMensaje(`✅ ¡ALUMNO REGISTRADO CON ÉXITO!<br><br>📧 Email: ${email}<br>👤 Usuario: ${usuario}<br>🔑 Contraseña: ${password}`, 'exito');
+
+            // Limpiar formulario
             setTimeout(() => {
-                document.getElementById('registroForm')?.reset();
-                document.getElementById('fotoPreview').innerHTML = '<div class="sin-foto">📷</div>';
+                document.getElementById('nombre').value = '';
+                document.getElementById('apellidoPaterno').value = '';
+                document.getElementById('apellidoMaterno').value = '';
+                document.getElementById('telefono').value = '';
+                document.getElementById('email').value = '';
+                document.getElementById('disciplina').value = '';
+                document.getElementById('password').value = '';
+                document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
+                document.getElementById('usuarioPreview').style.display = 'none';
+                fotoFile = null;
                 fotoDataURL = null;
-            }, 4000);
+            }, 3000);
+
         } catch (error) {
-            let msg = error.code === 'auth/email-already-in-use' ? '❌ Este email ya está registrado' : '❌ Error: ' + error.message;
-            mostrarMensaje(msg, 'error');
+            console.error('Error:', error);
+            let mensaje = '';
+            if (error.code === 'auth/email-already-in-use') {
+                mensaje = '❌ Este email ya está registrado';
+            } else {
+                mensaje = '❌ Error: ' + error.message;
+            }
+            mostrarMensaje(mensaje, 'error');
         }
     }
-    
+
     function mostrarMensaje(msg, tipo) {
         const div = document.getElementById('mensaje');
         div.innerHTML = msg;
         div.className = 'mensaje ' + tipo;
         div.style.display = 'block';
-        setTimeout(() => div.style.display = 'none', 5000);
+        setTimeout(() => {
+            div.style.display = 'none';
+        }, 5000);
     }
 </script>
+
 </body>
 </html>
