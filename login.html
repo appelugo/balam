@@ -2,12 +2,13 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Academia BALAM - Iniciar Sesión</title>
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js"></script>
+    <!-- Firebase: Usando la versión 9.6.1 que es estable y funciona bien -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -49,8 +50,7 @@
             color: #FFD700;
             text-align: center;
             font-size: 28px;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
+            margin-bottom: 5px;
         }
 
         .subtitulo {
@@ -96,10 +96,6 @@
             background: #333333;
         }
 
-        input::placeholder {
-            color: #888888;
-        }
-
         button {
             width: 100%;
             padding: 14px;
@@ -117,10 +113,6 @@
         button:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4);
-        }
-
-        button:active {
-            transform: translateY(0);
         }
 
         .mensaje-error {
@@ -169,25 +161,12 @@
             font-weight: 600;
             border: 1px solid #FFD700;
         }
-
-        @media (max-width: 480px) {
-            .login-container {
-                padding: 30px 20px;
-            }
-            h1 {
-                font-size: 24px;
-            }
-            button {
-                font-size: 16px;
-            }
-        }
     </style>
 </head>
 <body>
 
 <div class="login-container">
     <div class="logo">
-        <!-- Cambia "logo.png" por la ruta de tu logo -->
         <img src="logo.png" alt="Logo Academia BALAM" onerror="this.style.display='none'">
     </div>
     <h1>ACADEMIA BALAM</h1>
@@ -197,12 +176,12 @@
 
     <div class="input-group">
         <label>📧 Correo Electrónico</label>
-        <input type="email" id="email" placeholder="tu@email.com" autocomplete="email">
+        <input type="email" id="email" placeholder="tu@email.com">
     </div>
 
     <div class="input-group">
         <label>🔒 Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+        <input type="password" id="password" placeholder="••••••••">
     </div>
 
     <button onclick="iniciarSesion()">INGRESAR</button>
@@ -224,9 +203,7 @@
 </div>
 
 <script>
-    // ============================================
-    // TU CONFIGURACIÓN REAL DE FIREBASE
-    // ============================================
+    // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
         authDomain: "balam-4e843.firebaseapp.com",
@@ -240,9 +217,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.firestore();
-</script>
 
-<script>
     // Elementos del DOM
     const emailInput = document.getElementById('email');
     const passwordInput = document.getElementById('password');
@@ -250,15 +225,8 @@
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
 
-    // Permitir login con Enter
-    emailInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') iniciarSesion();
-    });
-    passwordInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') iniciarSesion();
-    });
-
-    async function iniciarSesion() {
+    // Función para iniciar sesión
+    window.iniciarSesion = async function() {
         const email = emailInput.value.trim();
         const password = passwordInput.value;
 
@@ -277,27 +245,26 @@
             const uid = user.uid;
 
             let rol = null;
-            let documentoId = null;
 
+            // Buscar en administradores
             const adminDoc = await db.collection('administradores').doc(uid).get();
             if (adminDoc.exists) {
-                rol = adminDoc.data().Rol || adminDoc.data().rol;
-                documentoId = uid;
+                rol = adminDoc.data().rol || adminDoc.data().Rol;
             }
 
+            // Si no es admin, buscar en auxiliares
             if (!rol) {
                 const auxDoc = await db.collection('auxiliares').doc(uid).get();
                 if (auxDoc.exists) {
-                    rol = auxDoc.data().Rol || auxDoc.data().rol;
-                    documentoId = uid;
+                    rol = auxDoc.data().rol || auxDoc.data().Rol;
                 }
             }
 
+            // Si no es admin ni auxiliar, buscar en alumnos
             if (!rol) {
                 const alumnoDoc = await db.collection('alumnos').doc(uid).get();
                 if (alumnoDoc.exists) {
-                    rol = alumnoDoc.data().Rol || alumnoDoc.data().rol || 'estudiante';
-                    documentoId = uid;
+                    rol = 'estudiante';
                 }
             }
 
@@ -308,14 +275,11 @@
             } else if (rol === 'estudiante') {
                 window.location.href = 'panel-estudiante.html';
             } else {
-                mostrarError('Usuario autenticado pero sin rol asignado. Contacta al administrador.');
+                mostrarError('Usuario sin rol asignado. Contacta al administrador.');
                 await auth.signOut();
-                btnLogin.disabled = false;
-                mensajeCargando.style.display = 'none';
             }
 
         } catch (error) {
-            console.error('Error en login:', error);
             let mensaje = '';
             switch (error.code) {
                 case 'auth/user-not-found':
@@ -327,17 +291,15 @@
                 case 'auth/invalid-email':
                     mensaje = '❌ Correo electrónico inválido';
                     break;
-                case 'auth/too-many-requests':
-                    mensaje = '❌ Demasiados intentos. Intenta más tarde';
-                    break;
                 default:
                     mensaje = '❌ Error: ' + error.message;
             }
             mostrarError(mensaje);
+        } finally {
             btnLogin.disabled = false;
             mensajeCargando.style.display = 'none';
         }
-    }
+    };
 
     function mostrarError(mensaje) {
         mensajeError.textContent = mensaje;
@@ -346,6 +308,14 @@
             mensajeError.style.display = 'none';
         }, 4000);
     }
+
+    // Permitir login con Enter
+    emailInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') window.iniciarSesion();
+    });
+    passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') window.iniciarSesion();
+    });
 </script>
 
 </body>
