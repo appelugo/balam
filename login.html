@@ -28,6 +28,11 @@
             width: 100%;
             box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
             border: 1px solid #FFD700;
+            animation: fadeInUp 0.6s ease-out;
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .logo { text-align: center; margin-bottom: 20px; }
         .logo img { max-width: 120px; height: auto; }
@@ -43,6 +48,7 @@
             border-radius: 10px;
             color: #FFFFFF;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
         input:focus { outline: none; border-color: #FFD700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); background: #333333; }
         button {
@@ -56,14 +62,29 @@
             font-weight: bold;
             cursor: pointer;
             margin-top: 10px;
+            transition: all 0.3s;
         }
         button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); }
         .mensaje-error { background: rgba(255, 0, 0, 0.2); border: 1px solid #FF4444; color: #FF8888; padding: 12px; border-radius: 10px; margin-top: 20px; text-align: center; display: none; }
         .mensaje-cargando { color: #FFD700; text-align: center; margin-top: 20px; display: none; }
         .info { text-align: center; margin-top: 25px; color: #888888; font-size: 12px; }
+        .opciones-login {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        .opcion-badge {
+            background: #2a2a2a;
+            color: #888;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            border: 1px solid #444;
+        }
         .disciplinas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333333; }
         .badge { background: #2a2a2a; color: #FFD700; padding: 5px 12px; border-radius: 20px; font-size: 11px; border: 1px solid #FFD700; }
-        .debug { background: #0a0a0a; border: 1px solid #333; padding: 10px; margin-top: 20px; font-size: 11px; color: #888; display: none; }
     </style>
 </head>
 <body>
@@ -76,8 +97,8 @@
     <div style="text-align: center;"><div class="subtitulo">Iniciar Sesión</div></div>
 
     <div class="input-group">
-        <label>📧 Correo Electrónico</label>
-        <input type="email" id="email" placeholder="tu@email.com">
+        <label>📧 Usuario, Email o Teléfono</label>
+        <input type="text" id="identificador" placeholder="Ej: ELUGO, usuario@email.com o 5551234567">
     </div>
 
     <div class="input-group">
@@ -87,9 +108,14 @@
 
     <button onclick="iniciarSesion()">INGRESAR</button>
 
+    <div class="opciones-login">
+        <span class="opcion-badge">👤 Usuario (ELUGO)</span>
+        <span class="opcion-badge">📧 Correo electrónico</span>
+        <span class="opcion-badge">📱 Teléfono</span>
+    </div>
+
     <div id="mensajeError" class="mensaje-error"></div>
     <div id="mensajeCargando" class="mensaje-cargando">Verificando credenciales...</div>
-    <div id="debugInfo" class="debug"></div>
 
     <div class="info">⚡ Acceso exclusivo para personal y estudiantes</div>
     <div class="disciplinas">
@@ -116,23 +142,92 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
-    const emailInput = document.getElementById('email');
+    const identificadorInput = document.getElementById('identificador');
     const passwordInput = document.getElementById('password');
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
-    const debugDiv = document.getElementById('debugInfo');
 
-    function debug(msg) {
-        console.log(msg);
-        debugDiv.style.display = 'block';
-        debugDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+    // Función para buscar un usuario por su identificador (usuario, email o teléfono)
+    async function buscarUsuarioPorIdentificador(identificador) {
+        let emailEncontrado = null;
+        let uidEncontrado = null;
+        let rolEncontrado = null;
+
+        // Caso 1: Si el identificador parece un email (contiene @)
+        if (identificador.includes('@')) {
+            console.log('Buscando por email:', identificador);
+            return { email: identificador, metodo: 'email' };
+        }
+
+        // Caso 2: Buscar en la colección ALUMNOS por usuario o teléfono
+        const alumnosQueryUsuario = await db.collection('alumnos')
+            .where('usuario', '==', identificador.toUpperCase())
+            .get();
+        
+        if (!alumnosQueryUsuario.empty) {
+            const alumnoDoc = alumnosQueryUsuario.docs[0];
+            emailEncontrado = alumnoDoc.data().email;
+            uidEncontrado = alumnoDoc.id;
+            rolEncontrado = 'estudiante';
+            console.log('Usuario encontrado por nombre de usuario:', identificador);
+            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        }
+
+        // Caso 3: Buscar en alumnos por teléfono
+        const alumnosQueryTelefono = await db.collection('alumnos')
+            .where('telefono', '==', identificador)
+            .get();
+        
+        if (!alumnosQueryTelefono.empty) {
+            const alumnoDoc = alumnosQueryTelefono.docs[0];
+            emailEncontrado = alumnoDoc.data().email;
+            uidEncontrado = alumnoDoc.id;
+            rolEncontrado = 'estudiante';
+            console.log('Usuario encontrado por teléfono:', identificador);
+            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        }
+
+        // Caso 4: Buscar en AUXILIARES por email o teléfono
+        const auxiliaresQuery = await db.collection('auxiliares')
+            .where('email', '==', identificador)
+            .get();
+        
+        if (!auxiliaresQuery.empty) {
+            const auxDoc = auxiliaresQuery.docs[0];
+            emailEncontrado = auxDoc.data().email;
+            uidEncontrado = auxDoc.id;
+            rolEncontrado = 'auxiliar';
+            console.log('Auxiliar encontrado por email:', identificador);
+            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        }
+
+        // Caso 5: Buscar en ADMINISTRADORES por email
+        const adminQuery = await db.collection('administradores')
+            .where('Email', '==', identificador)
+            .get();
+        
+        if (!adminQuery.empty) {
+            const adminDoc = adminQuery.docs[0];
+            emailEncontrado = adminDoc.data().Email;
+            uidEncontrado = adminDoc.id;
+            rolEncontrado = 'administrador';
+            console.log('Administrador encontrado por email:', identificador);
+            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        }
+
+        // Si no se encontró nada, asumimos que es un email normal
+        if (identificador.includes('@')) {
+            return { email: identificador, metodo: 'email' };
+        }
+
+        return null;
     }
 
     window.iniciarSesion = async function() {
-        const email = emailInput.value.trim();
+        const identificador = identificadorInput.value.trim();
         const password = passwordInput.value;
 
-        if (!email || !password) {
+        if (!identificador || !password) {
             mostrarError('Por favor, completa todos los campos');
             return;
         }
@@ -140,53 +235,82 @@
         document.querySelector('button').disabled = true;
         mensajeCargando.style.display = 'block';
         mensajeError.style.display = 'none';
-        debugDiv.innerHTML = '';
-        debug('Iniciando proceso de login...');
 
         try {
-            debug(`Intentando autenticar: ${email}`);
-            const userCredential = await auth.signInWithEmailAndPassword(email, password);
-            const uid = userCredential.user.uid;
-            debug(`✅ Autenticación exitosa. UID: ${uid}`);
-
-            // Intentar leer el documento de administradores
-            debug(`Buscando documento en colección 'administradores' con ID: ${uid}`);
-            const adminDoc = await db.collection('administradores').doc(uid).get();
+            // Buscar el email asociado al identificador
+            const resultado = await buscarUsuarioPorIdentificador(identificador);
             
-            if (adminDoc.exists) {
-                debug('✅ Documento encontrado en Firestore');
-                const data = adminDoc.data();
-                debug(`Datos del documento: ${JSON.stringify(data)}`);
-                
-                // Verificar el campo Rol (con mayúscula como está en tu Firestore)
-                if (data.Rol === 'administrador') {
-                    debug('✅ Rol verificado: administrador. Redirigiendo...');
-                    window.location.href = 'panel-admin.html';
-                    return;
-                } else {
-                    debug(`⚠️ El valor del campo Rol es: "${data.Rol}" (se esperaba "administrador")`);
-                }
-            } else {
-                debug('❌ Documento NO encontrado en Firestore para este UID');
-                debug('Verifica que:');
-                debug('1. La colección se llame exactamente "administradores"');
-                debug(`2. El documento ID sea exactamente "${uid}"`);
-                debug('3. Las reglas de Firestore permitan leer');
+            if (!resultado || !resultado.email) {
+                mostrarError('❌ Usuario no encontrado. Verifica tu usuario, email o teléfono');
+                document.querySelector('button').disabled = false;
+                mensajeCargando.style.display = 'none';
+                return;
             }
-            
-            // Si llegamos aquí, no es administrador
-            mostrarError('No tienes permisos de administrador');
-            debug('Cerrando sesión...');
-            await auth.signOut();
+
+            const emailLogin = resultado.email;
+            console.log('Intentando login con email:', emailLogin);
+
+            // Intentar autenticar con Firebase Auth
+            const userCredential = await auth.signInWithEmailAndPassword(emailLogin, password);
+            const user = userCredential.user;
+            const uid = user.uid;
+
+            let rol = null;
+
+            // Si ya tenemos el rol de la búsqueda, usarlo
+            if (resultado.rol) {
+                rol = resultado.rol;
+            } else {
+                // Buscar en administradores
+                const adminDoc = await db.collection('administradores').doc(uid).get();
+                if (adminDoc.exists) {
+                    rol = adminDoc.data().Rol || adminDoc.data().rol;
+                }
+
+                // Buscar en auxiliares
+                if (!rol) {
+                    const auxDoc = await db.collection('auxiliares').doc(uid).get();
+                    if (auxDoc.exists) {
+                        rol = auxDoc.data().Rol || auxDoc.data().rol || 'auxiliar';
+                    }
+                }
+
+                // Buscar en alumnos
+                if (!rol) {
+                    const alumnoDoc = await db.collection('alumnos').doc(uid).get();
+                    if (alumnoDoc.exists) {
+                        rol = 'estudiante';
+                    }
+                }
+            }
+
+            // Redirigir según el rol
+            if (rol === 'administrador') {
+                window.location.href = 'panel-admin.html';
+            } else if (rol === 'auxiliar') {
+                window.location.href = 'panel-auxiliar.html';
+            } else if (rol === 'estudiante') {
+                window.location.href = 'panel-estudiante.html';
+            } else {
+                mostrarError('Usuario sin rol asignado. Contacta al administrador.');
+                await auth.signOut();
+            }
 
         } catch (error) {
-            debug(`❌ ERROR: ${error.code} - ${error.message}`);
+            console.error('Error detallado:', error);
             let mensaje = '';
             switch (error.code) {
-                case 'auth/user-not-found': mensaje = '❌ Usuario no encontrado'; break;
-                case 'auth/wrong-password': mensaje = '❌ Contraseña incorrecta'; break;
-                case 'auth/invalid-email': mensaje = '❌ Correo electrónico inválido'; break;
-                default: mensaje = '❌ Error: ' + error.message;
+                case 'auth/user-not-found':
+                    mensaje = '❌ Usuario o contraseña incorrectos';
+                    break;
+                case 'auth/wrong-password':
+                    mensaje = '❌ Contraseña incorrecta';
+                    break;
+                case 'auth/invalid-email':
+                    mensaje = '❌ Formato de email inválido';
+                    break;
+                default:
+                    mensaje = '❌ Error: ' + error.message;
             }
             mostrarError(mensaje);
         } finally {
@@ -203,7 +327,7 @@
         }, 5000);
     }
 
-    emailInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
+    identificadorInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
     passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
 </script>
 
