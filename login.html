@@ -37,7 +37,6 @@
             transition: all 0.3s ease;
         }
 
-        /* Logo */
         .logo {
             text-align: center;
             margin-bottom: 24px;
@@ -48,7 +47,6 @@
             height: auto;
         }
 
-        /* Título */
         .subtitulo {
             color: #FFD700;
             text-align: center;
@@ -58,7 +56,6 @@
             letter-spacing: 1px;
         }
 
-        /* Campos */
         .input-group {
             margin-bottom: 20px;
         }
@@ -80,6 +77,7 @@
             color: #FFFFFF;
             font-size: 15px;
             transition: all 0.2s ease;
+            text-transform: uppercase;
         }
 
         input:focus {
@@ -91,9 +89,9 @@
 
         input::placeholder {
             color: #666;
+            text-transform: none;
         }
 
-        /* Botón */
         button {
             width: 100%;
             padding: 12px;
@@ -117,7 +115,6 @@
             transform: translateY(0);
         }
 
-        /* Mensajes */
         .mensaje-error {
             background: rgba(255, 0, 0, 0.15);
             border: 1px solid #ff4444;
@@ -138,25 +135,6 @@
             display: none;
         }
 
-        /* Badges de opciones */
-        .opciones-login {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-
-        .opcion-badge {
-            background: #252525;
-            color: #aaa;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            border: 1px solid #333;
-        }
-
-        /* Info extra */
         .info {
             text-align: center;
             margin-top: 20px;
@@ -164,7 +142,6 @@
             font-size: 11px;
         }
 
-        /* Responsive: pantallas muy pequeñas */
         @media (max-width: 480px) {
             .login-container {
                 padding: 24px 20px;
@@ -187,44 +164,33 @@
 <body>
 
 <div class="login-container">
-    <!-- Logo -->
     <div class="logo">
         <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
     </div>
 
-    <!-- Título simple -->
-    <div class="subtitulo">Iniciar Sesión</div>
+    <div class="subtitulo">INICIAR SESIÓN</div>
 
-    <!-- Campos -->
     <div class="input-group">
-        <label>📧 Usuario, Email o Teléfono</label>
-        <input type="text" id="identificador" placeholder="Ej: ELUGO, correo@ejemplo.com o 5512345678">
+        <label>USUARIO, EMAIL O TELÉFONO</label>
+        <input type="text" id="identificador" placeholder="" style="text-transform: uppercase;">
     </div>
 
     <div class="input-group">
-        <label>🔒 Contraseña</label>
-        <input type="password" id="password" placeholder="••••••••">
+        <label>CONTRASEÑA</label>
+        <input type="password" id="password" placeholder="">
     </div>
 
     <button onclick="iniciarSesion()">INGRESAR</button>
-
-    <!-- Badges informativos -->
-    <div class="opciones-login">
-        <span class="opcion-badge">👤 Usuario</span>
-        <span class="opcion-badge">📧 Correo</span>
-        <span class="opcion-badge">📱 Teléfono</span>
-    </div>
 
     <div id="mensajeError" class="mensaje-error"></div>
     <div id="mensajeCargando" class="mensaje-cargando">Verificando credenciales...</div>
 
     <div class="info">
-        ⚡ Acceso para personal y estudiantes
+        ACCESO EXCLUSIVO PARA PERSONAL Y ESTUDIANTES
     </div>
 </div>
 
 <script>
-    // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
         authDomain: "balam-4e843.firebaseapp.com",
@@ -243,51 +209,61 @@
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
 
-    // Función para buscar en TODAS las colecciones (administradores, auxiliares, alumnos)
+    // Convertir a mayúsculas mientras escribe (solo el identificador)
+    identificadorInput.addEventListener('input', function() {
+        this.value = this.value.toUpperCase();
+    });
+
     async function buscarUsuarioPorIdentificador(identificador) {
-        console.log('Buscando identificador:', identificador);
+        console.log('🔍 Buscando:', identificador);
         
-        // 1. Si es email, lo devolvemos directamente
+        // Si es email (contiene @ y minúsculas), no convertir
         if (identificador.includes('@')) {
-            return { email: identificador, tipo: 'email' };
+            return { email: identificador.toLowerCase(), tipo: 'email' };
         }
 
-        // 2. Buscar en ADMINISTRADORES por usuario o telefono
-        let queryAdminUser = await db.collection('administradores').where('usuario', '==', identificador.toUpperCase()).get();
+        // Buscar en ADMINISTRADORES por usuario o telefono
+        let queryAdminUser = await db.collection('administradores').where('usuario', '==', identificador).get();
         if (!queryAdminUser.empty) {
             let doc = queryAdminUser.docs[0];
+            console.log('✅ Admin encontrado por usuario');
             return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
         }
 
         let queryAdminTel = await db.collection('administradores').where('telefono', '==', identificador).get();
         if (!queryAdminTel.empty) {
             let doc = queryAdminTel.docs[0];
+            console.log('✅ Admin encontrado por teléfono');
             return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
         }
 
-        // 3. Buscar en AUXILIARES por usuario o telefono
-        let queryAuxUser = await db.collection('auxiliares').where('usuario', '==', identificador.toUpperCase()).get();
+        // Buscar en AUXILIARES
+        let queryAuxUser = await db.collection('auxiliares').where('usuario', '==', identificador).get();
         if (!queryAuxUser.empty) {
             let doc = queryAuxUser.docs[0];
+            console.log('✅ Auxiliar encontrado');
             return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
         }
 
         let queryAuxTel = await db.collection('auxiliares').where('telefono', '==', identificador).get();
         if (!queryAuxTel.empty) {
             let doc = queryAuxTel.docs[0];
+            console.log('✅ Auxiliar encontrado por teléfono');
             return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
         }
 
-        // 4. Buscar en ALUMNOS por usuario o telefono
-        let queryAlumUser = await db.collection('alumnos').where('usuario', '==', identificador.toUpperCase()).get();
+        // Buscar en ALUMNOS
+        let queryAlumUser = await db.collection('alumnos').where('usuario', '==', identificador).get();
         if (!queryAlumUser.empty) {
             let doc = queryAlumUser.docs[0];
+            console.log('✅ Alumno encontrado por usuario');
             return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
         }
 
         let queryAlumTel = await db.collection('alumnos').where('telefono', '==', identificador).get();
         if (!queryAlumTel.empty) {
             let doc = queryAlumTel.docs[0];
+            console.log('✅ Alumno encontrado por teléfono');
             return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
         }
 
@@ -295,12 +271,17 @@
     }
 
     window.iniciarSesion = async function() {
-        const identificador = identificadorInput.value.trim();
+        let identificador = identificadorInput.value.trim();
         const password = passwordInput.value;
 
         if (!identificador || !password) {
-            mostrarError('Completa todos los campos');
+            mostrarError('COMPLETA TODOS LOS CAMPOS');
             return;
+        }
+
+        // Si no es email, convertir a mayúsculas para búsqueda
+        if (!identificador.includes('@')) {
+            identificador = identificador.toUpperCase();
         }
 
         document.querySelector('button').disabled = true;
@@ -308,26 +289,23 @@
         mensajeError.style.display = 'none';
 
         try {
-            // Buscar el email según el identificador
             const resultado = await buscarUsuarioPorIdentificador(identificador);
             
             if (!resultado || !resultado.email) {
-                mostrarError('❌ Usuario no encontrado');
+                mostrarError('❌ USUARIO NO ENCONTRADO');
                 document.querySelector('button').disabled = false;
                 mensajeCargando.style.display = 'none';
                 return;
             }
 
-            console.log('Email encontrado:', resultado.email);
+            console.log('📧 Intentando login con:', resultado.email);
             
-            // Autenticar con Firebase Auth
             const userCredential = await auth.signInWithEmailAndPassword(resultado.email, password);
             const user = userCredential.user;
             const uid = user.uid;
 
             let rol = resultado.rol || null;
 
-            // Si no tenemos rol, buscarlo
             if (!rol) {
                 const adminDoc = await db.collection('administradores').doc(uid).get();
                 if (adminDoc.exists) rol = adminDoc.data().Rol || adminDoc.data().rol;
@@ -343,7 +321,6 @@
                 }
             }
 
-            // Redirigir según rol
             if (rol === 'administrador') {
                 window.location.href = 'panel-admin.html';
             } else if (rol === 'auxiliar') {
@@ -351,18 +328,28 @@
             } else if (rol === 'estudiante') {
                 window.location.href = 'panel-estudiante.html';
             } else {
-                mostrarError('Rol no identificado');
+                mostrarError('ROL NO IDENTIFICADO');
                 await auth.signOut();
             }
 
         } catch (error) {
-            console.error(error);
+            console.error('❌ Error:', error);
             let mensaje = '';
             switch (error.code) {
-                case 'auth/user-not-found': mensaje = '❌ Usuario o contraseña incorrectos'; break;
-                case 'auth/wrong-password': mensaje = '❌ Contraseña incorrecta'; break;
-                case 'auth/invalid-email': mensaje = '❌ Email inválido'; break;
-                default: mensaje = '❌ Error: ' + error.message;
+                case 'auth/invalid-login-credentials':
+                    mensaje = '❌ USUARIO O CONTRASEÑA INCORRECTOS';
+                    break;
+                case 'auth/user-not-found':
+                    mensaje = '❌ USUARIO NO ENCONTRADO';
+                    break;
+                case 'auth/wrong-password':
+                    mensaje = '❌ CONTRASEÑA INCORRECTA';
+                    break;
+                case 'auth/invalid-email':
+                    mensaje = '❌ EMAIL INVÁLIDO';
+                    break;
+                default:
+                    mensaje = '❌ ERROR: ' + error.message;
             }
             mostrarError(mensaje);
         } finally {
