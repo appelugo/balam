@@ -2,15 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Academia BALAM - Iniciar Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Iniciar Sesión - Academia</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #000000;
@@ -18,87 +23,182 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: 16px;
         }
+
         .login-container {
             background: #1a1a1a;
-            border-radius: 20px;
-            padding: 40px 30px;
-            max-width: 450px;
+            border-radius: 24px;
+            padding: 32px 24px;
             width: 100%;
-            box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);
+            max-width: 400px;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.15);
             border: 1px solid #FFD700;
-            animation: fadeInUp 0.6s ease-out;
-        }
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .logo { text-align: center; margin-bottom: 20px; }
-        .logo img { max-width: 120px; height: auto; }
-        h1 { color: #FFD700; text-align: center; font-size: 28px; margin-bottom: 5px; }
-        .subtitulo { color: #CCCCCC; text-align: center; font-size: 14px; margin-bottom: 30px; border-bottom: 1px solid #FFD700; display: inline-block; width: auto; margin-left: auto; margin-right: auto; padding-bottom: 8px; }
-        .input-group { margin-bottom: 25px; }
-        label { display: block; color: #FFD700; margin-bottom: 8px; font-weight: 600; font-size: 14px; }
-        input {
-            width: 100%;
-            padding: 14px 16px;
-            background: #2a2a2a;
-            border: 1px solid #555555;
-            border-radius: 10px;
-            color: #FFFFFF;
-            font-size: 16px;
             transition: all 0.3s ease;
         }
-        input:focus { outline: none; border-color: #FFD700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); background: #333333; }
+
+        /* Logo */
+        .logo {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .logo img {
+            max-width: 80px;
+            height: auto;
+        }
+
+        /* Título */
+        .subtitulo {
+            color: #FFD700;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 28px;
+            letter-spacing: 1px;
+        }
+
+        /* Campos */
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            color: #FFD700;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 14px;
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 12px;
+            color: #FFFFFF;
+            font-size: 15px;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #FFD700;
+            box-shadow: 0 0 6px rgba(255, 215, 0, 0.3);
+            background: #333;
+        }
+
+        input::placeholder {
+            color: #666;
+        }
+
+        /* Botón */
         button {
             width: 100%;
-            padding: 14px;
+            padding: 12px;
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000000;
+            color: #000;
             border: none;
-            border-radius: 10px;
-            font-size: 18px;
+            border-radius: 12px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.3s;
+            margin-top: 8px;
+            transition: all 0.2s ease;
         }
-        button:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255, 215, 0, 0.4); }
-        .mensaje-error { background: rgba(255, 0, 0, 0.2); border: 1px solid #FF4444; color: #FF8888; padding: 12px; border-radius: 10px; margin-top: 20px; text-align: center; display: none; }
-        .mensaje-cargando { color: #FFD700; text-align: center; margin-top: 20px; display: none; }
-        .info { text-align: center; margin-top: 25px; color: #888888; font-size: 12px; }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Mensajes */
+        .mensaje-error {
+            background: rgba(255, 0, 0, 0.15);
+            border: 1px solid #ff4444;
+            color: #ff8888;
+            padding: 10px;
+            border-radius: 12px;
+            margin-top: 16px;
+            text-align: center;
+            font-size: 13px;
+            display: none;
+        }
+
+        .mensaje-cargando {
+            color: #FFD700;
+            text-align: center;
+            margin-top: 16px;
+            font-size: 13px;
+            display: none;
+        }
+
+        /* Badges de opciones */
         .opciones-login {
             display: flex;
             justify-content: center;
-            gap: 15px;
-            margin-top: 15px;
+            gap: 12px;
+            margin-top: 20px;
             flex-wrap: wrap;
         }
+
         .opcion-badge {
-            background: #2a2a2a;
-            color: #888;
-            padding: 5px 12px;
+            background: #252525;
+            color: #aaa;
+            padding: 4px 12px;
             border-radius: 20px;
             font-size: 11px;
-            border: 1px solid #444;
+            border: 1px solid #333;
         }
-        .disciplinas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333333; }
-        .badge { background: #2a2a2a; color: #FFD700; padding: 5px 12px; border-radius: 20px; font-size: 11px; border: 1px solid #FFD700; }
+
+        /* Info extra */
+        .info {
+            text-align: center;
+            margin-top: 20px;
+            color: #555;
+            font-size: 11px;
+        }
+
+        /* Responsive: pantallas muy pequeñas */
+        @media (max-width: 480px) {
+            .login-container {
+                padding: 24px 20px;
+            }
+            .subtitulo {
+                font-size: 18px;
+                margin-bottom: 24px;
+            }
+            input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+            button {
+                padding: 10px;
+                font-size: 15px;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="login-container">
+    <!-- Logo -->
     <div class="logo">
-        <img src="logo.png" alt="Logo Academia BALAM" onerror="this.style.display='none'">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
     </div>
-    <h1>ACADEMIA BALAM</h1>
-    <div style="text-align: center;"><div class="subtitulo">Iniciar Sesión</div></div>
 
+    <!-- Título simple -->
+    <div class="subtitulo">Iniciar Sesión</div>
+
+    <!-- Campos -->
     <div class="input-group">
         <label>📧 Usuario, Email o Teléfono</label>
-        <input type="text" id="identificador" placeholder="Ej: ELUGO, usuario@email.com o 5551234567">
+        <input type="text" id="identificador" placeholder="Ej: ELUGO, correo@ejemplo.com o 5512345678">
     </div>
 
     <div class="input-group">
@@ -108,27 +208,23 @@
 
     <button onclick="iniciarSesion()">INGRESAR</button>
 
+    <!-- Badges informativos -->
     <div class="opciones-login">
-        <span class="opcion-badge">👤 Usuario (ELUGO)</span>
-        <span class="opcion-badge">📧 Correo electrónico</span>
+        <span class="opcion-badge">👤 Usuario</span>
+        <span class="opcion-badge">📧 Correo</span>
         <span class="opcion-badge">📱 Teléfono</span>
     </div>
 
     <div id="mensajeError" class="mensaje-error"></div>
     <div id="mensajeCargando" class="mensaje-cargando">Verificando credenciales...</div>
 
-    <div class="info">⚡ Acceso exclusivo para personal y estudiantes</div>
-    <div class="disciplinas">
-        <span class="badge">KICK BOXING</span>
-        <span class="badge">BOX</span>
-        <span class="badge">TAEWONDO</span>
-        <span class="badge">PILATES</span>
-        <span class="badge">ZUMBA</span>
-        <span class="badge">ENTRENAMIENTO FUNCIONAL</span>
+    <div class="info">
+        ⚡ Acceso para personal y estudiantes
     </div>
 </div>
 
 <script>
+    // Configuración de Firebase
     const firebaseConfig = {
         apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
         authDomain: "balam-4e843.firebaseapp.com",
@@ -147,77 +243,52 @@
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
 
-    // Función para buscar un usuario por su identificador (usuario, email o teléfono)
+    // Función para buscar en TODAS las colecciones (administradores, auxiliares, alumnos)
     async function buscarUsuarioPorIdentificador(identificador) {
-        let emailEncontrado = null;
-        let uidEncontrado = null;
-        let rolEncontrado = null;
-
-        // Caso 1: Si el identificador parece un email (contiene @)
+        console.log('Buscando identificador:', identificador);
+        
+        // 1. Si es email, lo devolvemos directamente
         if (identificador.includes('@')) {
-            console.log('Buscando por email:', identificador);
-            return { email: identificador, metodo: 'email' };
+            return { email: identificador, tipo: 'email' };
         }
 
-        // Caso 2: Buscar en la colección ALUMNOS por usuario o teléfono
-        const alumnosQueryUsuario = await db.collection('alumnos')
-            .where('usuario', '==', identificador.toUpperCase())
-            .get();
-        
-        if (!alumnosQueryUsuario.empty) {
-            const alumnoDoc = alumnosQueryUsuario.docs[0];
-            emailEncontrado = alumnoDoc.data().email;
-            uidEncontrado = alumnoDoc.id;
-            rolEncontrado = 'estudiante';
-            console.log('Usuario encontrado por nombre de usuario:', identificador);
-            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        // 2. Buscar en ADMINISTRADORES por usuario o telefono
+        let queryAdminUser = await db.collection('administradores').where('usuario', '==', identificador.toUpperCase()).get();
+        if (!queryAdminUser.empty) {
+            let doc = queryAdminUser.docs[0];
+            return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
         }
 
-        // Caso 3: Buscar en alumnos por teléfono
-        const alumnosQueryTelefono = await db.collection('alumnos')
-            .where('telefono', '==', identificador)
-            .get();
-        
-        if (!alumnosQueryTelefono.empty) {
-            const alumnoDoc = alumnosQueryTelefono.docs[0];
-            emailEncontrado = alumnoDoc.data().email;
-            uidEncontrado = alumnoDoc.id;
-            rolEncontrado = 'estudiante';
-            console.log('Usuario encontrado por teléfono:', identificador);
-            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        let queryAdminTel = await db.collection('administradores').where('telefono', '==', identificador).get();
+        if (!queryAdminTel.empty) {
+            let doc = queryAdminTel.docs[0];
+            return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
         }
 
-        // Caso 4: Buscar en AUXILIARES por email o teléfono
-        const auxiliaresQuery = await db.collection('auxiliares')
-            .where('email', '==', identificador)
-            .get();
-        
-        if (!auxiliaresQuery.empty) {
-            const auxDoc = auxiliaresQuery.docs[0];
-            emailEncontrado = auxDoc.data().email;
-            uidEncontrado = auxDoc.id;
-            rolEncontrado = 'auxiliar';
-            console.log('Auxiliar encontrado por email:', identificador);
-            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        // 3. Buscar en AUXILIARES por usuario o telefono
+        let queryAuxUser = await db.collection('auxiliares').where('usuario', '==', identificador.toUpperCase()).get();
+        if (!queryAuxUser.empty) {
+            let doc = queryAuxUser.docs[0];
+            return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
         }
 
-        // Caso 5: Buscar en ADMINISTRADORES por email
-        const adminQuery = await db.collection('administradores')
-            .where('Email', '==', identificador)
-            .get();
-        
-        if (!adminQuery.empty) {
-            const adminDoc = adminQuery.docs[0];
-            emailEncontrado = adminDoc.data().Email;
-            uidEncontrado = adminDoc.id;
-            rolEncontrado = 'administrador';
-            console.log('Administrador encontrado por email:', identificador);
-            return { email: emailEncontrado, uid: uidEncontrado, rol: rolEncontrado };
+        let queryAuxTel = await db.collection('auxiliares').where('telefono', '==', identificador).get();
+        if (!queryAuxTel.empty) {
+            let doc = queryAuxTel.docs[0];
+            return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
         }
 
-        // Si no se encontró nada, asumimos que es un email normal
-        if (identificador.includes('@')) {
-            return { email: identificador, metodo: 'email' };
+        // 4. Buscar en ALUMNOS por usuario o telefono
+        let queryAlumUser = await db.collection('alumnos').where('usuario', '==', identificador.toUpperCase()).get();
+        if (!queryAlumUser.empty) {
+            let doc = queryAlumUser.docs[0];
+            return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
+        }
+
+        let queryAlumTel = await db.collection('alumnos').where('telefono', '==', identificador).get();
+        if (!queryAlumTel.empty) {
+            let doc = queryAlumTel.docs[0];
+            return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
         }
 
         return null;
@@ -228,7 +299,7 @@
         const password = passwordInput.value;
 
         if (!identificador || !password) {
-            mostrarError('Por favor, completa todos los campos');
+            mostrarError('Completa todos los campos');
             return;
         }
 
@@ -237,54 +308,42 @@
         mensajeError.style.display = 'none';
 
         try {
-            // Buscar el email asociado al identificador
+            // Buscar el email según el identificador
             const resultado = await buscarUsuarioPorIdentificador(identificador);
             
             if (!resultado || !resultado.email) {
-                mostrarError('❌ Usuario no encontrado. Verifica tu usuario, email o teléfono');
+                mostrarError('❌ Usuario no encontrado');
                 document.querySelector('button').disabled = false;
                 mensajeCargando.style.display = 'none';
                 return;
             }
 
-            const emailLogin = resultado.email;
-            console.log('Intentando login con email:', emailLogin);
-
-            // Intentar autenticar con Firebase Auth
-            const userCredential = await auth.signInWithEmailAndPassword(emailLogin, password);
+            console.log('Email encontrado:', resultado.email);
+            
+            // Autenticar con Firebase Auth
+            const userCredential = await auth.signInWithEmailAndPassword(resultado.email, password);
             const user = userCredential.user;
             const uid = user.uid;
 
-            let rol = null;
+            let rol = resultado.rol || null;
 
-            // Si ya tenemos el rol de la búsqueda, usarlo
-            if (resultado.rol) {
-                rol = resultado.rol;
-            } else {
-                // Buscar en administradores
+            // Si no tenemos rol, buscarlo
+            if (!rol) {
                 const adminDoc = await db.collection('administradores').doc(uid).get();
-                if (adminDoc.exists) {
-                    rol = adminDoc.data().Rol || adminDoc.data().rol;
-                }
-
-                // Buscar en auxiliares
+                if (adminDoc.exists) rol = adminDoc.data().Rol || adminDoc.data().rol;
+                
                 if (!rol) {
                     const auxDoc = await db.collection('auxiliares').doc(uid).get();
-                    if (auxDoc.exists) {
-                        rol = auxDoc.data().Rol || auxDoc.data().rol || 'auxiliar';
-                    }
+                    if (auxDoc.exists) rol = 'auxiliar';
                 }
-
-                // Buscar en alumnos
+                
                 if (!rol) {
                     const alumnoDoc = await db.collection('alumnos').doc(uid).get();
-                    if (alumnoDoc.exists) {
-                        rol = 'estudiante';
-                    }
+                    if (alumnoDoc.exists) rol = 'estudiante';
                 }
             }
 
-            // Redirigir según el rol
+            // Redirigir según rol
             if (rol === 'administrador') {
                 window.location.href = 'panel-admin.html';
             } else if (rol === 'auxiliar') {
@@ -292,25 +351,18 @@
             } else if (rol === 'estudiante') {
                 window.location.href = 'panel-estudiante.html';
             } else {
-                mostrarError('Usuario sin rol asignado. Contacta al administrador.');
+                mostrarError('Rol no identificado');
                 await auth.signOut();
             }
 
         } catch (error) {
-            console.error('Error detallado:', error);
+            console.error(error);
             let mensaje = '';
             switch (error.code) {
-                case 'auth/user-not-found':
-                    mensaje = '❌ Usuario o contraseña incorrectos';
-                    break;
-                case 'auth/wrong-password':
-                    mensaje = '❌ Contraseña incorrecta';
-                    break;
-                case 'auth/invalid-email':
-                    mensaje = '❌ Formato de email inválido';
-                    break;
-                default:
-                    mensaje = '❌ Error: ' + error.message;
+                case 'auth/user-not-found': mensaje = '❌ Usuario o contraseña incorrectos'; break;
+                case 'auth/wrong-password': mensaje = '❌ Contraseña incorrecta'; break;
+                case 'auth/invalid-email': mensaje = '❌ Email inválido'; break;
+                default: mensaje = '❌ Error: ' + error.message;
             }
             mostrarError(mensaje);
         } finally {
@@ -324,7 +376,7 @@
         mensajeError.style.display = 'block';
         setTimeout(() => {
             mensajeError.style.display = 'none';
-        }, 5000);
+        }, 4000);
     }
 
     identificadorInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
