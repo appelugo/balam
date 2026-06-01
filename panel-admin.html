@@ -22,11 +22,11 @@
             min-height: 100vh;
         }
 
-        /* Header */
+        /* Header más compacto */
         .header {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             border-bottom: 2px solid #FFD700;
-            padding: 15px 30px;
+            padding: 12px 30px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -40,15 +40,17 @@
             gap: 12px;
         }
 
+        /* Logo más grande sin aumentar el header */
         .logo-area img {
-            width: 50px;
-            height: 50px;
+            width: 55px;
+            height: 55px;
             object-fit: contain;
         }
 
         .logo-area h1 {
             color: #FFD700;
             font-size: 22px;
+            letter-spacing: 1px;
         }
 
         .user-info {
@@ -56,7 +58,7 @@
             align-items: center;
             gap: 15px;
             background: rgba(255,215,0,0.1);
-            padding: 8px 18px;
+            padding: 6px 16px;
             border-radius: 50px;
             border: 1px solid #FFD700;
         }
@@ -64,17 +66,17 @@
         .user-name {
             color: #FFD700;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
         }
 
         .btn-cerrar {
             background: transparent;
             color: #FFD700;
             border: 1px solid #FFD700;
-            padding: 6px 16px;
+            padding: 5px 14px;
             border-radius: 25px;
             cursor: pointer;
-            font-size: 13px;
+            font-size: 12px;
             transition: all 0.3s;
         }
 
@@ -92,32 +94,32 @@
 
         .welcome {
             text-align: center;
-            margin-bottom: 40px;
+            margin-bottom: 35px;
         }
 
         .welcome h2 {
             color: #FFD700;
-            font-size: 26px;
-            margin-bottom: 8px;
+            font-size: 24px;
+            margin-bottom: 6px;
         }
 
         .welcome p {
             color: #aaa;
-            font-size: 14px;
+            font-size: 13px;
         }
 
-        /* Grid de tarjetas */
+        /* Grid de tarjetas - más compactas */
         .cards-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin-bottom: 35px;
         }
 
         .card {
             background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-            border-radius: 20px;
-            padding: 28px 20px;
+            border-radius: 16px;
+            padding: 18px 12px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -125,25 +127,25 @@
         }
 
         .card:hover {
-            transform: translateY(-8px);
+            transform: translateY(-5px);
             border-color: #FFD700;
-            box-shadow: 0 15px 30px rgba(255,215,0,0.15);
+            box-shadow: 0 10px 20px rgba(255,215,0,0.15);
         }
 
         .card-icon {
-            font-size: 48px;
-            margin-bottom: 15px;
+            font-size: 38px;
+            margin-bottom: 10px;
         }
 
         .card h3 {
             color: #FFD700;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 16px;
+            margin-bottom: 6px;
         }
 
         .card p {
             color: #aaa;
-            font-size: 13px;
+            font-size: 11px;
         }
 
         /* Área de contenido */
@@ -169,17 +171,18 @@
 
         .content-header h3 {
             color: #FFD700;
-            font-size: 22px;
+            font-size: 20px;
         }
 
         .close-content {
             background: #333;
             border: none;
             color: #FFD700;
-            padding: 8px 20px;
+            padding: 6px 16px;
             border-radius: 25px;
             cursor: pointer;
             transition: all 0.3s;
+            font-size: 13px;
         }
 
         .close-content:hover {
@@ -189,7 +192,7 @@
 
         iframe {
             width: 100%;
-            min-height: 550px;
+            min-height: 520px;
             border: none;
             border-radius: 16px;
             background: transparent;
@@ -198,7 +201,11 @@
         /* Responsive */
         @media (max-width: 768px) {
             .header {
-                padding: 12px 20px;
+                padding: 10px 20px;
+            }
+            .logo-area img {
+                width: 45px;
+                height: 45px;
             }
             .logo-area h1 {
                 font-size: 18px;
@@ -207,22 +214,25 @@
                 padding: 20px 15px;
             }
             .cards-grid {
-                gap: 15px;
+                gap: 12px;
             }
             .card {
-                padding: 20px 15px;
+                padding: 14px 10px;
             }
             .card-icon {
-                font-size: 36px;
+                font-size: 30px;
             }
             .card h3 {
-                font-size: 16px;
+                font-size: 14px;
+            }
+            .card p {
+                font-size: 10px;
             }
             .content-area {
                 padding: 15px;
             }
             iframe {
-                min-height: 450px;
+                min-height: 400px;
             }
         }
     </style>
@@ -231,6 +241,7 @@
 
 <div class="header">
     <div class="logo-area">
+        <!-- Logo más grande - ajusta la ruta si es necesario -->
         <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
         <h1>ACADEMIA BALAM</h1>
     </div>
@@ -250,31 +261,31 @@
         <div class="card" onclick="cargarSeccion('registro-alumnos.html', '📝 Registrar Alumno')">
             <div class="card-icon">👨‍🎓</div>
             <h3>Registrar Alumno</h3>
-            <p>Nuevo estudiante con usuario y QR</p>
+            <p>Nuevo estudiante</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('registro-auxiliar.html', '👥 Registrar Auxiliar')">
             <div class="card-icon">👥</div>
             <h3>Registrar Auxiliar</h3>
-            <p>Personal de apoyo o instructores</p>
+            <p>Personal de apoyo</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('horarios.html', '📅 Horarios')">
             <div class="card-icon">📅</div>
             <h3>Horarios</h3>
-            <p>Gestionar horarios por disciplina</p>
+            <p>Gestionar horarios</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('escanear-qr.html', '📷 Escanear QR')">
             <div class="card-icon">📱</div>
             <h3>Escanear QR</h3>
-            <p>Tomar asistencia escaneando</p>
+            <p>Tomar asistencia</p>
         </div>
 
         <div class="card" onclick="cargarSeccion('reportes.html', '📊 Reportes')">
             <div class="card-icon">📈</div>
             <h3>Reportes</h3>
-            <p>Ver estadísticas y asistencias</p>
+            <p>Ver estadísticas</p>
         </div>
     </div>
 
@@ -328,7 +339,7 @@
         tituloElem.textContent = titulo;
         iframe.src = url;
         contenidoDiv.style.display = 'block';
-        contenidoDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // ELIMINADO EL scrollIntoView - ya no se desplaza automáticamente
     }
 
     function cerrarSeccion() {
