@@ -22,7 +22,7 @@
             min-height: 100vh;
         }
 
-        /* Header más compacto */
+        /* Header compacto */
         .header {
             background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
             border-bottom: 2px solid #FFD700;
@@ -40,7 +40,6 @@
             gap: 12px;
         }
 
-        /* Logo más grande sin aumentar el header */
         .logo-area img {
             width: 55px;
             height: 55px;
@@ -87,43 +86,44 @@
 
         /* Contenedor principal */
         .container {
-            padding: 30px 20px;
-            max-width: 1400px;
+            padding: 40px 20px;
+            max-width: 1200px;
             margin: 0 auto;
         }
 
         .welcome {
             text-align: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
         }
 
         .welcome h2 {
             color: #FFD700;
-            font-size: 24px;
-            margin-bottom: 6px;
+            font-size: 26px;
+            margin-bottom: 8px;
         }
 
         .welcome p {
             color: #aaa;
-            font-size: 13px;
+            font-size: 14px;
         }
 
-        /* Grid de tarjetas - más compactas */
+        /* Grid de tarjetas compactas */
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 18px;
-            margin-bottom: 35px;
+            gap: 20px;
         }
 
         .card {
             background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
             border-radius: 16px;
-            padding: 18px 12px;
+            padding: 20px 15px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid #333;
+            text-decoration: none;
+            display: block;
         }
 
         .card:hover {
@@ -133,69 +133,19 @@
         }
 
         .card-icon {
-            font-size: 38px;
-            margin-bottom: 10px;
+            font-size: 42px;
+            margin-bottom: 12px;
         }
 
         .card h3 {
             color: #FFD700;
             font-size: 16px;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
         }
 
         .card p {
             color: #aaa;
             font-size: 11px;
-        }
-
-        /* Área de contenido */
-        .content-area {
-            background: rgba(26,26,26,0.8);
-            border-radius: 20px;
-            padding: 25px;
-            margin-top: 20px;
-            border: 1px solid #333;
-            backdrop-filter: blur(10px);
-        }
-
-        .content-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #FFD700;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
-
-        .content-header h3 {
-            color: #FFD700;
-            font-size: 20px;
-        }
-
-        .close-content {
-            background: #333;
-            border: none;
-            color: #FFD700;
-            padding: 6px 16px;
-            border-radius: 25px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 13px;
-        }
-
-        .close-content:hover {
-            background: #FFD700;
-            color: #000;
-        }
-
-        iframe {
-            width: 100%;
-            min-height: 520px;
-            border: none;
-            border-radius: 16px;
-            background: transparent;
         }
 
         /* Responsive */
@@ -211,28 +161,19 @@
                 font-size: 18px;
             }
             .container {
-                padding: 20px 15px;
+                padding: 25px 15px;
             }
             .cards-grid {
-                gap: 12px;
+                gap: 15px;
             }
             .card {
-                padding: 14px 10px;
+                padding: 15px 10px;
             }
             .card-icon {
-                font-size: 30px;
+                font-size: 34px;
             }
             .card h3 {
                 font-size: 14px;
-            }
-            .card p {
-                font-size: 10px;
-            }
-            .content-area {
-                padding: 15px;
-            }
-            iframe {
-                min-height: 400px;
             }
         }
     </style>
@@ -241,7 +182,6 @@
 
 <div class="header">
     <div class="logo-area">
-        <!-- Logo más grande - ajusta la ruta si es necesario -->
         <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
         <h1>ACADEMIA BALAM</h1>
     </div>
@@ -254,47 +194,44 @@
 <div class="container">
     <div class="welcome">
         <h2>✨ Panel de Control ✨</h2>
-        <p>Selecciona una opción para comenzar</p>
+        <p>Selecciona una opción para administrar</p>
     </div>
 
     <div class="cards-grid">
-        <div class="card" onclick="cargarSeccion('registro-alumnos.html', '📝 Registrar Alumno')">
+        <!-- Registrar Alumno - abre en nueva pestaña -->
+        <a href="registro-alumnos.html" target="_blank" class="card">
             <div class="card-icon">👨‍🎓</div>
             <h3>Registrar Alumno</h3>
-            <p>Nuevo estudiante</p>
-        </div>
+            <p>Nuevo estudiante con usuario y QR</p>
+        </a>
 
-        <div class="card" onclick="cargarSeccion('registro-auxiliar.html', '👥 Registrar Auxiliar')">
+        <!-- Registrar Auxiliar - abre en nueva pestaña -->
+        <a href="registro-auxiliar.html" target="_blank" class="card">
             <div class="card-icon">👥</div>
             <h3>Registrar Auxiliar</h3>
-            <p>Personal de apoyo</p>
-        </div>
+            <p>Personal de apoyo o instructores</p>
+        </a>
 
-        <div class="card" onclick="cargarSeccion('horarios.html', '📅 Horarios')">
+        <!-- Horarios - abre en nueva pestaña -->
+        <a href="horarios.html" target="_blank" class="card">
             <div class="card-icon">📅</div>
             <h3>Horarios</h3>
-            <p>Gestionar horarios</p>
-        </div>
+            <p>Gestionar horarios por disciplina</p>
+        </a>
 
-        <div class="card" onclick="cargarSeccion('escanear-qr.html', '📷 Escanear QR')">
+        <!-- Escanear QR - abre en nueva pestaña -->
+        <a href="escanear-qr.html" target="_blank" class="card">
             <div class="card-icon">📱</div>
             <h3>Escanear QR</h3>
-            <p>Tomar asistencia</p>
-        </div>
+            <p>Tomar asistencia escaneando</p>
+        </a>
 
-        <div class="card" onclick="cargarSeccion('reportes.html', '📊 Reportes')">
+        <!-- Reportes - abre en nueva pestaña -->
+        <a href="reportes.html" target="_blank" class="card">
             <div class="card-icon">📈</div>
             <h3>Reportes</h3>
-            <p>Ver estadísticas</p>
-        </div>
-    </div>
-
-    <div id="contenidoDinamico" class="content-area" style="display: none;">
-        <div class="content-header">
-            <h3 id="tituloSeccion">Sección</h3>
-            <button class="close-content" onclick="cerrarSeccion()">✖️ Cerrar</button>
-        </div>
-        <iframe id="contenidoFrame" src=""></iframe>
+            <p>Ver estadísticas y asistencias</p>
+        </a>
     </div>
 </div>
 
@@ -330,25 +267,6 @@
             document.getElementById('userName').textContent = user.email;
         }
     });
-
-    function cargarSeccion(url, titulo) {
-        const contenidoDiv = document.getElementById('contenidoDinamico');
-        const iframe = document.getElementById('contenidoFrame');
-        const tituloElem = document.getElementById('tituloSeccion');
-        
-        tituloElem.textContent = titulo;
-        iframe.src = url;
-        contenidoDiv.style.display = 'block';
-        // ELIMINADO EL scrollIntoView - ya no se desplaza automáticamente
-    }
-
-    function cerrarSeccion() {
-        const contenidoDiv = document.getElementById('contenidoDinamico');
-        const iframe = document.getElementById('contenidoFrame');
-        
-        contenidoDiv.style.display = 'none';
-        iframe.src = '';
-    }
 
     function cerrarSesion() {
         auth.signOut().then(() => {
