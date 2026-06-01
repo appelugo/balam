@@ -29,37 +29,87 @@
             margin: 0 auto;
         }
 
-        .header {
+        /* Pantalla de éxito */
+        .success-screen {
+            background: #1a1a1a;
+            border-radius: 28px;
+            border: 2px solid #00ff00;
+            padding: 40px 25px;
             text-align: center;
-            margin-bottom: 25px;
-            animation: fadeInDown 0.5s ease;
+            animation: fadeInUp 0.5s ease;
         }
 
-        .header h1 {
+        .success-screen .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .success-screen h2 {
+            color: #00ff00;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        .success-screen .info-box {
+            background: #0a0a0a;
+            border-radius: 16px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .success-screen .info-box p {
             color: #FFD700;
-            font-size: 26px;
+            margin: 8px 0;
+            font-size: 14px;
+            word-break: break-all;
+        }
+
+        .btn-group {
             display: flex;
-            align-items: center;
+            gap: 15px;
             justify-content: center;
-            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
         }
 
-        .header p {
-            color: #aaa;
-            font-size: 13px;
-            margin-top: 5px;
+        .btn-primary {
+            background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
         }
 
+        .btn-secondary {
+            background: #2a2a2a;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover, .btn-secondary:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Formulario */
         .card {
             background: #1a1a1a;
             border-radius: 28px;
             border: 1px solid #FFD700;
             overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             animation: fadeInUp 0.5s ease;
         }
 
-        /* Foto */
         .foto-section {
             background: linear-gradient(135deg, #0f0f0f 0%, #151515 100%);
             padding: 20px;
@@ -71,10 +121,6 @@
             color: #FFD700;
             font-size: 14px;
             margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
         .foto-preview {
@@ -89,12 +135,6 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .foto-preview:hover {
-            transform: scale(1.02);
-            box-shadow: 0 0 15px rgba(255,215,0,0.3);
         }
 
         .foto-preview img {
@@ -123,19 +163,8 @@
             color: #FFD700;
             font-size: 13px;
             cursor: pointer;
-            transition: all 0.2s;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
         }
 
-        .btn-foto:hover {
-            background: #FFD700;
-            color: #000;
-            transform: translateY(-2px);
-        }
-
-        /* Formulario */
         .form-section {
             padding: 22px;
         }
@@ -150,17 +179,10 @@
             font-size: 12px;
             font-weight: 600;
             margin-bottom: 6px;
-            letter-spacing: 0.5px;
         }
 
         label .required {
             color: #ff6666;
-        }
-
-        label .opcional {
-            color: #888;
-            font-weight: normal;
-            font-size: 10px;
         }
 
         input, select {
@@ -171,14 +193,11 @@
             border-radius: 14px;
             color: #fff;
             font-size: 14px;
-            transition: all 0.2s;
         }
 
         input:focus, select:focus {
             outline: none;
             border-color: #FFD700;
-            background: #2a2a2a;
-            box-shadow: 0 0 8px rgba(255,215,0,0.2);
         }
 
         .row {
@@ -204,7 +223,6 @@
             padding: 0 12px;
         }
 
-        /* Usuario generado */
         .usuario-card {
             background: linear-gradient(135deg, #1a2a1a 0%, #0f1a0f 100%);
             border: 1px solid #FFD700;
@@ -214,18 +232,11 @@
             text-align: center;
         }
 
-        .usuario-label {
-            font-size: 11px;
-            color: #FFD700;
-            letter-spacing: 1px;
-        }
-
         .usuario-value {
             font-size: 20px;
             font-weight: bold;
             color: #FFD700;
             font-family: monospace;
-            letter-spacing: 2px;
         }
 
         .btn-registrar {
@@ -238,17 +249,7 @@
             font-weight: bold;
             color: #000;
             cursor: pointer;
-            transition: all 0.3s;
             margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .btn-registrar:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
         }
 
         .mensaje {
@@ -258,13 +259,6 @@
             text-align: center;
             font-size: 13px;
             display: none;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .exito {
-            background: rgba(0, 255, 0, 0.15);
-            border: 1px solid #00ff00;
-            color: #00ff88;
         }
 
         .error {
@@ -278,127 +272,121 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        @keyframes fadeInDown {
-            from { opacity: 0; transform: translateY(-20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
         @media (max-width: 500px) {
-            body { padding: 12px; }
             .row { grid-template-columns: 1fr; gap: 0; }
-            .form-section { padding: 18px; }
             .foto-preview { width: 100px; height: 100px; }
-            .usuario-value { font-size: 16px; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div class="header">
-        <h1>📝 REGISTRAR ALUMNO</h1>
-        <p>Completa los datos del nuevo estudiante</p>
-    </div>
-
-    <div class="card">
-        <!-- FOTO -->
-        <div class="foto-section">
-            <div class="foto-title">📸 FOTO DEL ALUMNO</div>
-            <div class="foto-preview" id="fotoPreview" onclick="subirFoto()">
-                <div class="foto-placeholder" id="fotoPlaceholder">📷</div>
+    <!-- Pantalla de registro (visible por defecto) -->
+    <div id="formularioContainer">
+        <div class="card">
+            <div class="foto-section">
+                <div class="foto-title">📸 FOTO DEL ALUMNO</div>
+                <div class="foto-preview" id="fotoPreview" onclick="subirFoto()">
+                    <div class="foto-placeholder" id="fotoPlaceholder">📷</div>
+                </div>
+                <div class="btn-foto-group">
+                    <button type="button" class="btn-foto" onclick="tomarFoto()">📸 Tomar foto</button>
+                    <button type="button" class="btn-foto" onclick="subirFoto()">🖼️ Subir imagen</button>
+                </div>
             </div>
-            <div class="btn-foto-group">
-                <button type="button" class="btn-foto" onclick="tomarFoto()">📸 Tomar foto</button>
-                <button type="button" class="btn-foto" onclick="subirFoto()">🖼️ Subir imagen</button>
+
+            <div class="form-section">
+                <div class="row">
+                    <div class="form-group">
+                        <label>NOMBRE(S) <span class="required">*</span></label>
+                        <input type="text" id="nombre" placeholder="Juan Carlos">
+                    </div>
+                    <div class="form-group">
+                        <label>APELLIDO PATERNO <span class="required">*</span></label>
+                        <input type="text" id="apellidoPaterno" placeholder="García">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>APELLIDO MATERNO <span class="required">*</span></label>
+                    <input type="text" id="apellidoMaterno" placeholder="López">
+                </div>
+
+                <div class="row">
+                    <div class="form-group">
+                        <label>TELÉFONO <span class="required">*</span></label>
+                        <input type="tel" id="telefono" placeholder="55 1234 5678">
+                    </div>
+                    <div class="form-group">
+                        <label>EMAIL <span class="required">*</span></label>
+                        <input type="email" id="email" placeholder="alumno@ejemplo.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>FECHA DE NACIMIENTO <span class="required">*</span></label>
+                    <input type="date" id="fechaNacimiento">
+                </div>
+
+                <div class="separator"><span>📞 CONTACTOS DE EMERGENCIA</span></div>
+
+                <div class="form-group">
+                    <label>TELÉFONO EMERGENCIA 1 <span class="required">*</span></label>
+                    <input type="tel" id="emergencia1" placeholder="55 9876 5432">
+                </div>
+
+                <div class="form-group">
+                    <label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label>
+                    <input type="tel" id="emergencia2" placeholder="55 8765 4321">
+                </div>
+
+                <div class="separator"><span>🥋 DATOS ACADÉMICOS</span></div>
+
+                <div class="form-group">
+                    <label>DISCIPLINA <span class="required">*</span></label>
+                    <select id="disciplina">
+                        <option value="">Seleccionar disciplina</option>
+                        <option value="ENTRENAMIENTO FUNCIONAL">🏋️ ENTRENAMIENTO FUNCIONAL</option>
+                        <option value="ZUMBA">💃 ZUMBA</option>
+                        <option value="PILATES">🧘 PILATES</option>
+                        <option value="TAEWONDO">🥋 TAEWONDO</option>
+                        <option value="BOX">🥊 BOX</option>
+                        <option value="KICK BOXING">🦵 KICK BOXING</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>CONTRASEÑA <span class="required">*</span></label>
+                    <input type="password" id="password" placeholder="Mínimo 6 caracteres">
+                </div>
+
+                <div id="usuarioPreview" class="usuario-card" style="display: none;">
+                    <div class="usuario-label">👤 USUARIO GENERADO</div>
+                    <div class="usuario-value" id="usuarioGenerado"></div>
+                    <div style="font-size: 10px; color: #888; margin-top: 5px;">Este será su usuario para iniciar sesión</div>
+                </div>
+
+                <button class="btn-registrar" onclick="registrarAlumno()">
+                    ✅ REGISTRAR ALUMNO
+                </button>
+
+                <div id="mensaje" class="mensaje"></div>
             </div>
         </div>
+    </div>
 
-        <!-- FORMULARIO -->
-        <div class="form-section">
-            <!-- Datos personales -->
-            <div class="row">
-                <div class="form-group">
-                    <label>NOMBRE(S) <span class="required">*</span></label>
-                    <input type="text" id="nombre" placeholder="Juan Carlos">
-                </div>
-                <div class="form-group">
-                    <label>APELLIDO PATERNO <span class="required">*</span></label>
-                    <input type="text" id="apellidoPaterno" placeholder="García">
-                </div>
+    <!-- Pantalla de éxito (oculta por defecto) -->
+    <div id="exitoContainer" style="display: none;">
+        <div class="success-screen">
+            <div class="icon">✅</div>
+            <h2>¡ALUMNO REGISTRADO!</h2>
+            <div class="info-box" id="exitoInfo">
+                <!-- Aquí se llenarán los datos del alumno registrado -->
             </div>
-
-            <div class="form-group">
-                <label>APELLIDO MATERNO <span class="required">*</span></label>
-                <input type="text" id="apellidoMaterno" placeholder="López">
+            <div class="btn-group">
+                <button class="btn-primary" onclick="registrarOtro()">📝 REGISTRAR OTRO</button>
+                <button class="btn-secondary" onclick="irPanelPrincipal()">🏠 IR AL PANEL PRINCIPAL</button>
             </div>
-
-            <div class="row">
-                <div class="form-group">
-                    <label>TELÉFONO <span class="required">*</span></label>
-                    <input type="tel" id="telefono" placeholder="55 1234 5678">
-                </div>
-                <div class="form-group">
-                    <label>EMAIL <span class="required">*</span></label>
-                    <input type="email" id="email" placeholder="alumno@ejemplo.com">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>FECHA DE NACIMIENTO <span class="required">*</span></label>
-                <input type="date" id="fechaNacimiento">
-            </div>
-
-            <!-- Teléfonos de emergencia -->
-            <div class="separator"><span>📞 CONTACTOS DE EMERGENCIA</span></div>
-
-            <div class="form-group">
-                <label>TELÉFONO EMERGENCIA 1 <span class="required">*</span></label>
-                <input type="tel" id="emergencia1" placeholder="55 9876 5432">
-            </div>
-
-            <div class="form-group">
-                <label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label>
-                <input type="tel" id="emergencia2" placeholder="55 8765 4321">
-            </div>
-
-            <!-- Disciplina y contraseña -->
-            <div class="separator"><span>🥋 DATOS ACADÉMICOS</span></div>
-
-            <div class="form-group">
-                <label>DISCIPLINA <span class="required">*</span></label>
-                <select id="disciplina">
-                    <option value="">Seleccionar disciplina</option>
-                    <option value="ENTRENAMIENTO FUNCIONAL">🏋️ ENTRENAMIENTO FUNCIONAL</option>
-                    <option value="ZUMBA">💃 ZUMBA</option>
-                    <option value="PILATES">🧘 PILATES</option>
-                    <option value="TAEWONDO">🥋 TAEWONDO</option>
-                    <option value="BOX">🥊 BOX</option>
-                    <option value="KICK BOXING">🦵 KICK BOXING</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label>CONTRASEÑA <span class="required">*</span></label>
-                <input type="password" id="password" placeholder="Mínimo 6 caracteres">
-            </div>
-
-            <!-- Usuario generado -->
-            <div id="usuarioPreview" class="usuario-card" style="display: none;">
-                <div class="usuario-label">👤 USUARIO GENERADO</div>
-                <div class="usuario-value" id="usuarioGenerado"></div>
-                <div style="font-size: 10px; color: #888; margin-top: 5px;">Este será su usuario para iniciar sesión</div>
-            </div>
-
-            <button class="btn-registrar" onclick="registrarAlumno()">
-                ✅ REGISTRAR ALUMNO
-            </button>
-
-            <div id="mensaje" class="mensaje"></div>
         </div>
     </div>
 </div>
@@ -422,6 +410,7 @@
 
     let fotoFile = null;
     let fotoDataURL = null;
+    let ultimoRegistro = null;
 
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
@@ -471,6 +460,44 @@
         reader.readAsDataURL(file);
     }
 
+    function mostrarExito(email, usuario, password) {
+        const exitoInfo = document.getElementById('exitoInfo');
+        exitoInfo.innerHTML = `
+            <p>📧 <strong>Email:</strong> ${email}</p>
+            <p>👤 <strong>Usuario:</strong> ${usuario}</p>
+            <p>🔑 <strong>Contraseña:</strong> ${password}</p>
+            <p>📁 <strong>Guardado en:</strong> Authentication + Firestore</p>
+            <p>📂 <strong>Colección:</strong> alumnos</p>
+        `;
+        document.getElementById('formularioContainer').style.display = 'none';
+        document.getElementById('exitoContainer').style.display = 'block';
+    }
+
+    function registrarOtro() {
+        // Limpiar formulario
+        document.getElementById('nombre').value = '';
+        document.getElementById('apellidoPaterno').value = '';
+        document.getElementById('apellidoMaterno').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('fechaNacimiento').value = '';
+        document.getElementById('emergencia1').value = '';
+        document.getElementById('emergencia2').value = '';
+        document.getElementById('disciplina').value = '';
+        document.getElementById('password').value = '';
+        document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
+        document.getElementById('usuarioPreview').style.display = 'none';
+        fotoFile = null;
+        fotoDataURL = null;
+        
+        document.getElementById('exitoContainer').style.display = 'none';
+        document.getElementById('formularioContainer').style.display = 'block';
+    }
+
+    function irPanelPrincipal() {
+        window.location.href = 'panel-admin.html';
+    }
+
     async function registrarAlumno() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const apPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
@@ -484,7 +511,6 @@
         const password = document.getElementById('password').value;
         const usuario = generarUsuario();
 
-        // Validar campos obligatorios
         if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1 || !disciplina || !password) {
             mostrarMensaje('❌ Completa todos los campos obligatorios (*)', 'error');
             return;
@@ -495,12 +521,14 @@
             return;
         }
 
-        mostrarMensaje('⏳ Registrando alumno...', 'exito');
+        mostrarMensaje('⏳ Registrando alumno...', null);
 
         try {
+            // Crear en Authentication
             const userCredential = await auth.createUserWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
 
+            // Subir foto
             let fotoURL = '';
             if (fotoFile) {
                 const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
@@ -508,6 +536,7 @@
                 fotoURL = await storageRef.getDownloadURL();
             }
 
+            // Guardar en Firestore (¡ESTE ES EL PASO CLAVE!)
             const alumnoData = {
                 uid: uid,
                 usuario: usuario,
@@ -527,31 +556,19 @@
             };
 
             await db.collection('alumnos').doc(uid).set(alumnoData);
-
-            mostrarMensaje(`✅ ¡ALUMNO REGISTRADO!<br><br>📧 Email: ${email}<br>👤 Usuario: ${usuario}<br>🔑 Contraseña: ${password}`, 'exito');
-
-            setTimeout(() => {
-                document.getElementById('nombre').value = '';
-                document.getElementById('apellidoPaterno').value = '';
-                document.getElementById('apellidoMaterno').value = '';
-                document.getElementById('telefono').value = '';
-                document.getElementById('email').value = '';
-                document.getElementById('fechaNacimiento').value = '';
-                document.getElementById('emergencia1').value = '';
-                document.getElementById('emergencia2').value = '';
-                document.getElementById('disciplina').value = '';
-                document.getElementById('password').value = '';
-                document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
-                document.getElementById('usuarioPreview').style.display = 'none';
-                fotoFile = null;
-                fotoDataURL = null;
-            }, 4000);
+            
+            console.log('✅ Documento creado en Firestore. Colección "alumnos" creada automáticamente');
+            
+            // Mostrar pantalla de éxito
+            mostrarExito(email, usuario, password);
 
         } catch (error) {
             console.error('Error:', error);
             let mensaje = '';
             if (error.code === 'auth/email-already-in-use') {
                 mensaje = '❌ Este email ya está registrado';
+            } else if (error.code === 'permission-denied') {
+                mensaje = '❌ Error de permisos. Ve a Firestore → Reglas y cambia a "modo prueba"';
             } else {
                 mensaje = '❌ Error: ' + error.message;
             }
@@ -562,11 +579,11 @@
     function mostrarMensaje(msg, tipo) {
         const div = document.getElementById('mensaje');
         div.innerHTML = msg;
-        div.className = 'mensaje ' + tipo;
+        div.className = 'mensaje ' + (tipo || '');
         div.style.display = 'block';
         setTimeout(() => {
             div.style.display = 'none';
-        }, 5000);
+        }, 4000);
     }
 </script>
 
