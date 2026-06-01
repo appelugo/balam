@@ -43,7 +43,6 @@
             border-radius: 10px;
             color: #FFFFFF;
             font-size: 16px;
-            transition: all 0.3s ease;
         }
         input:focus { outline: none; border-color: #FFD700; box-shadow: 0 0 8px rgba(255, 215, 0, 0.3); background: #333333; }
         button {
@@ -64,6 +63,7 @@
         .info { text-align: center; margin-top: 25px; color: #888888; font-size: 12px; }
         .disciplinas { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 25px; padding-top: 20px; border-top: 1px solid #333333; }
         .badge { background: #2a2a2a; color: #FFD700; padding: 5px 12px; border-radius: 20px; font-size: 11px; border: 1px solid #FFD700; }
+        .debug { background: #0a0a0a; border: 1px solid #333; padding: 10px; margin-top: 20px; font-size: 11px; color: #888; display: none; }
     </style>
 </head>
 <body>
@@ -89,6 +89,7 @@
 
     <div id="mensajeError" class="mensaje-error"></div>
     <div id="mensajeCargando" class="mensaje-cargando">Verificando credenciales...</div>
+    <div id="debugInfo" class="debug"></div>
 
     <div class="info">⚡ Acceso exclusivo para personal y estudiantes</div>
     <div class="disciplinas">
@@ -119,6 +120,13 @@
     const passwordInput = document.getElementById('password');
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
+    const debugDiv = document.getElementById('debugInfo');
+
+    function debug(msg) {
+        console.log(msg);
+        debugDiv.style.display = 'block';
+        debugDiv.innerHTML += new Date().toLocaleTimeString() + ': ' + msg + '<br>';
+    }
 
     window.iniciarSesion = async function() {
         const email = emailInput.value.trim();
@@ -132,28 +140,47 @@
         document.querySelector('button').disabled = true;
         mensajeCargando.style.display = 'block';
         mensajeError.style.display = 'none';
+        debugDiv.innerHTML = '';
+        debug('Iniciando proceso de login...');
 
         try {
+            debug(`Intentando autenticar: ${email}`);
             const userCredential = await auth.signInWithEmailAndPassword(email, password);
             const uid = userCredential.user.uid;
+            debug(`✅ Autenticación exitosa. UID: ${uid}`);
 
-            // Buscar en la colección administradores
+            // Intentar leer el documento de administradores
+            debug(`Buscando documento en colección 'administradores' con ID: ${uid}`);
             const adminDoc = await db.collection('administradores').doc(uid).get();
             
             if (adminDoc.exists) {
+                debug('✅ Documento encontrado en Firestore');
                 const data = adminDoc.data();
-                // Verificar tanto 'Rol' (mayúscula) como 'rol' (minúscula)
-                if (data.Rol === 'administrador' || data.rol === 'administrador') {
+                debug(`Datos del documento: ${JSON.stringify(data)}`);
+                
+                // Verificar el campo Rol (con mayúscula como está en tu Firestore)
+                if (data.Rol === 'administrador') {
+                    debug('✅ Rol verificado: administrador. Redirigiendo...');
                     window.location.href = 'panel-admin.html';
                     return;
+                } else {
+                    debug(`⚠️ El valor del campo Rol es: "${data.Rol}" (se esperaba "administrador")`);
                 }
+            } else {
+                debug('❌ Documento NO encontrado en Firestore para este UID');
+                debug('Verifica que:');
+                debug('1. La colección se llame exactamente "administradores"');
+                debug(`2. El documento ID sea exactamente "${uid}"`);
+                debug('3. Las reglas de Firestore permitan leer');
             }
             
             // Si llegamos aquí, no es administrador
             mostrarError('No tienes permisos de administrador');
+            debug('Cerrando sesión...');
             await auth.signOut();
 
         } catch (error) {
+            debug(`❌ ERROR: ${error.code} - ${error.message}`);
             let mensaje = '';
             switch (error.code) {
                 case 'auth/user-not-found': mensaje = '❌ Usuario no encontrado'; break;
@@ -173,7 +200,7 @@
         mensajeError.style.display = 'block';
         setTimeout(() => {
             mensajeError.style.display = 'none';
-        }, 4000);
+        }, 5000);
     }
 
     emailInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
