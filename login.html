@@ -56,6 +56,44 @@
             letter-spacing: 1px;
         }
 
+        /* Selector de modo */
+        .modo-selector {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+
+        .modo-btn {
+            background: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 40px;
+            padding: 8px 18px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .modo-btn.active {
+            background: #FFD700;
+            border-color: #FFD700;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .modo-btn.active .modo-icon {
+            filter: none;
+        }
+
+        .modo-icon {
+            font-size: 18px;
+        }
+
         .input-group {
             margin-bottom: 20px;
         }
@@ -77,7 +115,6 @@
             color: #FFFFFF;
             font-size: 15px;
             transition: all 0.2s ease;
-            text-transform: uppercase;
         }
 
         input:focus {
@@ -89,7 +126,6 @@
 
         input::placeholder {
             color: #666;
-            text-transform: none;
         }
 
         button {
@@ -109,10 +145,6 @@
         button:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
-        }
-
-        button:active {
-            transform: translateY(0);
         }
 
         .mensaje-error {
@@ -146,17 +178,9 @@
             .login-container {
                 padding: 24px 20px;
             }
-            .subtitulo {
-                font-size: 18px;
-                margin-bottom: 24px;
-            }
-            input {
-                padding: 10px 12px;
-                font-size: 14px;
-            }
-            button {
-                padding: 10px;
-                font-size: 15px;
+            .modo-btn {
+                padding: 6px 14px;
+                font-size: 12px;
             }
         }
     </style>
@@ -170,13 +194,26 @@
 
     <div class="subtitulo">INICIAR SESIÓN</div>
 
-    <div class="input-group">
-        <label>USUARIO, EMAIL O TELÉFONO</label>
-        <input type="text" id="identificador" placeholder="" style="text-transform: uppercase;">
+    <!-- Selector de modo -->
+    <div class="modo-selector">
+        <div class="modo-btn" id="modoUsuario" onclick="setModo('usuario')">
+            <span class="modo-icon">👤</span> Usuario
+        </div>
+        <div class="modo-btn" id="modoCorreo" onclick="setModo('correo')">
+            <span class="modo-icon">📧</span> Correo
+        </div>
+        <div class="modo-btn" id="modoTelefono" onclick="setModo('telefono')">
+            <span class="modo-icon">📱</span> Teléfono
+        </div>
     </div>
 
     <div class="input-group">
-        <label>CONTRASEÑA</label>
+        <label id="labelIdentificador">👤 USUARIO</label>
+        <input type="text" id="identificador" placeholder="" autocomplete="off">
+    </div>
+
+    <div class="input-group">
+        <label>🔒 CONTRASEÑA</label>
         <input type="password" id="password" placeholder="">
     </div>
 
@@ -204,69 +241,107 @@
     const auth = firebase.auth();
     const db = firebase.firestore();
 
+    let modoActual = 'usuario'; // usuario, correo, telefono
+
     const identificadorInput = document.getElementById('identificador');
     const passwordInput = document.getElementById('password');
     const mensajeError = document.getElementById('mensajeError');
     const mensajeCargando = document.getElementById('mensajeCargando');
+    const labelIdentificador = document.getElementById('labelIdentificador');
 
-    // Convertir a mayúsculas mientras escribe (solo el identificador)
+    function setModo(modo) {
+        modoActual = modo;
+        
+        // Actualizar estilos de los botones
+        document.getElementById('modoUsuario').classList.remove('active');
+        document.getElementById('modoCorreo').classList.remove('active');
+        document.getElementById('modoTelefono').classList.remove('active');
+        
+        if (modo === 'usuario') {
+            document.getElementById('modoUsuario').classList.add('active');
+            labelIdentificador.innerHTML = '👤 USUARIO';
+            identificadorInput.placeholder = 'Ej: ELUGO';
+            identificadorInput.value = '';
+            identificadorInput.style.textTransform = 'uppercase';
+            identificadorInput.type = 'text';
+        } else if (modo === 'correo') {
+            document.getElementById('modoCorreo').classList.add('active');
+            labelIdentificador.innerHTML = '📧 CORREO ELECTRÓNICO';
+            identificadorInput.placeholder = 'ejemplo@correo.com';
+            identificadorInput.value = '';
+            identificadorInput.style.textTransform = 'none';
+            identificadorInput.type = 'email';
+        } else if (modo === 'telefono') {
+            document.getElementById('modoTelefono').classList.add('active');
+            labelIdentificador.innerHTML = '📱 TELÉFONO';
+            identificadorInput.placeholder = '5512345678';
+            identificadorInput.value = '';
+            identificadorInput.style.textTransform = 'none';
+            identificadorInput.type = 'tel';
+        }
+        
+        identificadorInput.focus();
+    }
+
+    // Convertir a mayúsculas SOLO en modo usuario
     identificadorInput.addEventListener('input', function() {
-        this.value = this.value.toUpperCase();
+        if (modoActual === 'usuario') {
+            this.value = this.value.toUpperCase();
+        } else if (modoActual === 'telefono') {
+            this.value = this.value.replace(/[^0-9]/g, '');
+        }
+        // En modo correo, NO se modifica nada
     });
 
-    async function buscarUsuarioPorIdentificador(identificador) {
-        console.log('🔍 Buscando:', identificador);
+    async function buscarUsuarioPorIdentificador(identificador, modo) {
+        console.log(`🔍 Buscando por ${modo}:`, identificador);
         
-        // Si es email (contiene @ y minúsculas), no convertir
-        if (identificador.includes('@')) {
+        if (modo === 'correo') {
             return { email: identificador.toLowerCase(), tipo: 'email' };
         }
-
-        // Buscar en ADMINISTRADORES por usuario o telefono
-        let queryAdminUser = await db.collection('administradores').where('usuario', '==', identificador).get();
-        if (!queryAdminUser.empty) {
-            let doc = queryAdminUser.docs[0];
-            console.log('✅ Admin encontrado por usuario');
-            return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
+        
+        if (modo === 'usuario') {
+            // Buscar en ADMINISTRADORES por usuario
+            let query = await db.collection('administradores').where('usuario', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
+            }
+            // Buscar en AUXILIARES por usuario
+            query = await db.collection('auxiliares').where('usuario', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
+            }
+            // Buscar en ALUMNOS por usuario
+            query = await db.collection('alumnos').where('usuario', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
+            }
         }
-
-        let queryAdminTel = await db.collection('administradores').where('telefono', '==', identificador).get();
-        if (!queryAdminTel.empty) {
-            let doc = queryAdminTel.docs[0];
-            console.log('✅ Admin encontrado por teléfono');
-            return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
+        
+        if (modo === 'telefono') {
+            // Buscar en ADMINISTRADORES por teléfono
+            let query = await db.collection('administradores').where('telefono', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().Email, uid: doc.id, rol: 'administrador' };
+            }
+            // Buscar en AUXILIARES por teléfono
+            query = await db.collection('auxiliares').where('telefono', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
+            }
+            // Buscar en ALUMNOS por teléfono
+            query = await db.collection('alumnos').where('telefono', '==', identificador).get();
+            if (!query.empty) {
+                let doc = query.docs[0];
+                return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
+            }
         }
-
-        // Buscar en AUXILIARES
-        let queryAuxUser = await db.collection('auxiliares').where('usuario', '==', identificador).get();
-        if (!queryAuxUser.empty) {
-            let doc = queryAuxUser.docs[0];
-            console.log('✅ Auxiliar encontrado');
-            return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
-        }
-
-        let queryAuxTel = await db.collection('auxiliares').where('telefono', '==', identificador).get();
-        if (!queryAuxTel.empty) {
-            let doc = queryAuxTel.docs[0];
-            console.log('✅ Auxiliar encontrado por teléfono');
-            return { email: doc.data().email, uid: doc.id, rol: 'auxiliar' };
-        }
-
-        // Buscar en ALUMNOS
-        let queryAlumUser = await db.collection('alumnos').where('usuario', '==', identificador).get();
-        if (!queryAlumUser.empty) {
-            let doc = queryAlumUser.docs[0];
-            console.log('✅ Alumno encontrado por usuario');
-            return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
-        }
-
-        let queryAlumTel = await db.collection('alumnos').where('telefono', '==', identificador).get();
-        if (!queryAlumTel.empty) {
-            let doc = queryAlumTel.docs[0];
-            console.log('✅ Alumno encontrado por teléfono');
-            return { email: doc.data().email, uid: doc.id, rol: 'estudiante' };
-        }
-
+        
         return null;
     }
 
@@ -279,17 +354,12 @@
             return;
         }
 
-        // Si no es email, convertir a mayúsculas para búsqueda
-        if (!identificador.includes('@')) {
-            identificador = identificador.toUpperCase();
-        }
-
         document.querySelector('button').disabled = true;
         mensajeCargando.style.display = 'block';
         mensajeError.style.display = 'none';
 
         try {
-            const resultado = await buscarUsuarioPorIdentificador(identificador);
+            const resultado = await buscarUsuarioPorIdentificador(identificador, modoActual);
             
             if (!resultado || !resultado.email) {
                 mostrarError('❌ USUARIO NO ENCONTRADO');
@@ -308,13 +378,11 @@
 
             if (!rol) {
                 const adminDoc = await db.collection('administradores').doc(uid).get();
-                if (adminDoc.exists) rol = adminDoc.data().Rol || adminDoc.data().rol;
-                
+                if (adminDoc.exists) rol = 'administrador';
                 if (!rol) {
                     const auxDoc = await db.collection('auxiliares').doc(uid).get();
                     if (auxDoc.exists) rol = 'auxiliar';
                 }
-                
                 if (!rol) {
                     const alumnoDoc = await db.collection('alumnos').doc(uid).get();
                     if (alumnoDoc.exists) rol = 'estudiante';
@@ -339,15 +407,6 @@
                 case 'auth/invalid-login-credentials':
                     mensaje = '❌ USUARIO O CONTRASEÑA INCORRECTOS';
                     break;
-                case 'auth/user-not-found':
-                    mensaje = '❌ USUARIO NO ENCONTRADO';
-                    break;
-                case 'auth/wrong-password':
-                    mensaje = '❌ CONTRASEÑA INCORRECTA';
-                    break;
-                case 'auth/invalid-email':
-                    mensaje = '❌ EMAIL INVÁLIDO';
-                    break;
                 default:
                     mensaje = '❌ ERROR: ' + error.message;
             }
@@ -368,6 +427,9 @@
 
     identificadorInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
     passwordInput.addEventListener('keypress', e => { if (e.key === 'Enter') window.iniciarSesion(); });
+    
+    // Inicializar modo usuario por defecto
+    setModo('usuario');
 </script>
 
 </body>
