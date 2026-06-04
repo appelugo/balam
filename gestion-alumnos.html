@@ -44,12 +44,9 @@
         }
         .buscador {
             margin-bottom: 25px;
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
         }
         .buscador input {
-            flex: 1;
+            width: 100%;
             padding: 12px 18px;
             background: #252525;
             border: 1px solid #3a3a3a;
@@ -85,11 +82,12 @@
             overflow: hidden;
         }
         th, td {
-            padding: 14px 12px;
+            padding: 12px 10px;
             text-align: left;
             border-bottom: 1px solid #333;
             color: #ddd;
             font-size: 13px;
+            vertical-align: middle;
         }
         th {
             background: #0a0a0a;
@@ -98,6 +96,25 @@
         }
         tr:hover {
             background: #252525;
+        }
+        .foto-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #0a0a0a;
+            border: 1px solid #FFD700;
+        }
+        .sin-foto {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #666;
         }
         .estado-activo {
             background: rgba(0,255,0,0.2);
@@ -176,6 +193,18 @@
             outline: none;
             border-color: #FFD700;
         }
+        .foto-modal {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        .foto-modal img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #FFD700;
+        }
         .modal-buttons {
             display: flex;
             gap: 15px;
@@ -206,9 +235,11 @@
             color: #FFD700;
             padding: 40px;
         }
-        @media (max-width: 700px) {
-            th, td { padding: 10px 6px; font-size: 11px; }
+        @media (max-width: 800px) {
+            th, td { padding: 8px 6px; font-size: 11px; }
             .btn-editar { padding: 4px 8px; font-size: 10px; }
+            .foto-thumb { width: 30px; height: 30px; }
+            .sin-foto { width: 30px; height: 30px; font-size: 14px; }
         }
     </style>
 </head>
@@ -221,7 +252,7 @@
     </div>
 
     <div class="buscador">
-        <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, email o teléfono..." onkeyup="filtrarAlumnos()">
+        <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, email o teléfono..." autocomplete="off">
     </div>
 
     <div class="stats">
@@ -240,6 +271,9 @@
     <div class="modal-content">
         <h2>✏️ EDITAR ALUMNO</h2>
         <input type="hidden" id="editUid">
+        
+        <div class="foto-modal" id="modalFoto"></div>
+        
         <div class="form-group">
             <label>NOMBRE(S)</label>
             <input type="text" id="editNombre" style="text-transform: uppercase;">
@@ -288,7 +322,7 @@
         </div>
         <div class="form-group">
             <label>🔑 NUEVA CONTRASEÑA (dejar vacío para no cambiar)</label>
-            <input type="password" id="editContrasena" placeholder="Mínimo 6 caracteres">
+            <input type="password" id="editContrasena" placeholder="Mínimo 6 caracteres" autocomplete="off">
         </div>
         <div class="modal-buttons">
             <button class="btn-guardar" onclick="guardarCambios()">💾 GUARDAR</button>
@@ -362,6 +396,14 @@
         renderizarTabla();
     }
 
+    function getFotoThumb(alumno) {
+        if (alumno.fotoBase64 && alumno.fotoBase64.startsWith('data:image')) {
+            return `<img src="${alumno.fotoBase64}" class="foto-thumb" alt="foto">`;
+        } else {
+            return `<div class="sin-foto">📷</div>`;
+        }
+    }
+
     function renderizarTabla() {
         const container = document.getElementById('tablaContainer');
         if (filteredAlumnos.length === 0) {
@@ -372,7 +414,16 @@
         let html = `
             <table>
                 <thead>
-                    <tr><th>NOMBRE</th><th>EMAIL</th><th>TELÉFONO</th><th>EMERGENCIA</th><th>MÉTODO PAGO</th><th>ESTADO</th><th>ACCIONES</th></tr>
+                    <tr>
+                        <th>FOTO</th>
+                        <th>NOMBRE</th>
+                        <th>EMAIL</th>
+                        <th>TELÉFONO</th>
+                        <th>EMERGENCIA</th>
+                        <th>MÉTODO PAGO</th>
+                        <th>ESTADO</th>
+                        <th>ACCIONES</th>
+                    </tr>
                 </thead>
                 <tbody>
         `;
@@ -381,9 +432,11 @@
             const nombreCompleto = `${alumno.nombre || ''} ${alumno.apellidoPaterno || ''} ${alumno.apellidoMaterno || ''}`.trim();
             const estadoClass = alumno.estado === 'activo' ? 'estado-activo' : 'estado-inactivo';
             const estadoText = alumno.estado === 'activo' ? 'ACTIVO' : 'INACTIVO';
+            const fotoThumb = getFotoThumb(alumno);
             
             html += `
                 <tr>
+                    <td>${fotoThumb}</td>
                     <td><strong>${nombreCompleto}</strong><br><span style="font-size:10px;color:#888;">${alumno.usuario || ''}</span></td>
                     <td>${alumno.email || ''}</td>
                     <td>${alumno.telefono || ''}</td>
@@ -420,6 +473,14 @@
         document.getElementById('editEstado').value = alumnoEditando.estado || 'activo';
         document.getElementById('editContrasena').value = '';
         
+        // Mostrar foto en modal
+        const modalFoto = document.getElementById('modalFoto');
+        if (alumnoEditando.fotoBase64 && alumnoEditando.fotoBase64.startsWith('data:image')) {
+            modalFoto.innerHTML = `<img src="${alumnoEditando.fotoBase64}" alt="Foto">`;
+        } else {
+            modalFoto.innerHTML = `<div class="sin-foto" style="width:80px;height:80px;font-size:40px;">📷</div>`;
+        }
+        
         document.getElementById('editModal').style.display = 'flex';
     }
 
@@ -449,14 +510,13 @@
             // Actualizar Firestore
             await db.collection('alumnos').doc(alumnoEditando.id).update(updates);
             
-            // Actualizar contraseña en Authentication si se proporcionó
+            // Actualizar contraseña si se proporcionó
             if (nuevaContrasena && nuevaContrasena.length >= 6) {
                 const user = auth.currentUser;
                 if (user && user.uid === alumnoEditando.id) {
                     await user.updatePassword(nuevaContrasena);
                 } else {
-                    // Para actualizar contraseña de otro usuario se necesita admin (se puede hacer con función)
-                    alert('⚠️ Para cambiar contraseña de otro usuario, inicia sesión como administrador');
+                    alert('⚠️ Solo puedes cambiar tu propia contraseña. Inicia sesión como administrador para cambiar la de otros.');
                 }
             }
             
@@ -464,11 +524,14 @@
             cerrarModal();
             await cargarAlumnos();
         } catch (error) {
-            console.error('Error al guardar:', error);
+            console.error('Error:', error);
             alert('❌ Error: ' + error.message);
         }
     }
 
+    // Evento de búsqueda
+    document.getElementById('searchInput').addEventListener('keyup', filtrarAlumnos);
+    
     cargarAlumnos();
 </script>
 
