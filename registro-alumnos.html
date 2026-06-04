@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Registrar Alumno - Academia BALAM</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
@@ -49,6 +50,7 @@
         .form-group { margin-bottom: 16px; }
         label { display: block; color: #FFD700; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
         label .required { color: #ff6666; }
+        label .opcional { color: #888; font-weight: normal; }
         input, select {
             width: 100%; padding: 12px 14px; background: #252525;
             border: 1px solid #3a3a3a; border-radius: 14px; color: #fff; font-size: 14px;
@@ -78,10 +80,8 @@
         .loader-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.95);
             z-index: 2000;
             justify-content: center;
@@ -91,25 +91,21 @@
         }
         .loader-logo {
             position: relative;
-            width: 120px;
-            height: 120px;
+            width: 120px; height: 120px;
             display: flex;
             align-items: center;
             justify-content: center;
         }
         .loader-logo img {
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             object-fit: contain;
             position: relative;
             z-index: 2;
         }
         .light-ring {
             position: absolute;
-            top: -10px;
-            left: -10px;
-            width: 140px;
-            height: 140px;
+            top: -10px; left: -10px;
+            width: 140px; height: 140px;
             border-radius: 50%;
             background: transparent;
             z-index: 1;
@@ -117,10 +113,7 @@
         .light-ring::before {
             content: '';
             position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
             border-radius: 50%;
             background: conic-gradient(from 0deg, transparent, #FFD700, #FFA500, transparent);
             animation: rotateLight 1.5s linear infinite;
@@ -128,10 +121,7 @@
         .light-ring::after {
             content: '';
             position: absolute;
-            top: 2px;
-            left: 2px;
-            right: 2px;
-            bottom: 2px;
+            top: 2px; left: 2px; right: 2px; bottom: 2px;
             background: #0a0a0a;
             border-radius: 50%;
         }
@@ -143,7 +133,6 @@
             color: #FFD700;
             font-size: 16px;
             font-weight: bold;
-            letter-spacing: 3px;
             animation: pulse 1.5s ease-in-out infinite;
         }
         @keyframes pulse {
@@ -155,10 +144,8 @@
         .modal-exito {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: rgba(0,0,0,0.95);
             z-index: 3000;
             justify-content: center;
@@ -187,8 +174,8 @@
         .modal-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
         .btn-modal-primary {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000; border: none; padding: 12px 25px; border-radius: 30px;
-            font-size: 14px; font-weight: bold; cursor: pointer;
+            color: #000; border: none; padding: 12px 25px;
+            border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer;
         }
         .btn-modal-secondary {
             background: #2a2a2a; color: #FFD700; border: 1px solid #FFD700;
@@ -211,7 +198,7 @@
         <div class="foto-section">
             <div class="foto-title">📸 FOTO DEL ALUMNO</div>
             <div class="foto-preview" id="fotoPreview" onclick="subirFoto()">
-                <div class="foto-placeholder" id="fotoPlaceholder">📷</div>
+                <div class="foto-placeholder">📷</div>
             </div>
             <div class="btn-foto-group">
                 <button type="button" class="btn-foto" onclick="tomarFoto()">📸 Tomar foto</button>
@@ -224,7 +211,7 @@
                 <div class="form-group"><label>NOMBRE(S) <span class="required">*</span></label><input type="text" id="nombre" placeholder="Juan Carlos"></div>
                 <div class="form-group"><label>APELLIDO PATERNO <span class="required">*</span></label><input type="text" id="apellidoPaterno" placeholder="García"></div>
             </div>
-            <div class="form-group"><label>APELLIDO MATERNO <span class="required">*</span></label><input type="text" id="apellidoMaterno" placeholder="López"></div>
+            <div class="form-group"><label>APELLIDO MATERNO <span class="opcional">(Opcional)</span></label><input type="text" id="apellidoMaterno" placeholder="López (opcional)"></div>
             <div class="row">
                 <div class="form-group"><label>TELÉFONO <span class="required">*</span></label><input type="tel" id="telefono" placeholder="55 1234 5678"></div>
                 <div class="form-group"><label>EMAIL <span class="required">*</span></label><input type="email" id="email" placeholder="alumno@ejemplo.com"></div>
@@ -233,8 +220,6 @@
             <div class="separator"><span>📞 CONTACTOS DE EMERGENCIA</span></div>
             <div class="form-group"><label>TELÉFONO EMERGENCIA 1 <span class="required">*</span></label><input type="tel" id="emergencia1" placeholder="55 9876 5432"></div>
             <div class="form-group"><label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label><input type="tel" id="emergencia2" placeholder="55 8765 4321"></div>
-            
-            <div class="separator"><span>🥋 DATOS ACADÉMICOS</span></div>
             
             <div id="usuarioPreview" class="usuario-card" style="display: none;">
                 <div class="usuario-label">👤 USUARIO GENERADO</div>
@@ -246,7 +231,6 @@
     </div>
 </div>
 
-<!-- LOADER -->
 <div id="loaderOverlay" class="loader-overlay">
     <div class="loader-logo">
         <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
@@ -255,7 +239,6 @@
     <div class="loader-text">REGISTRANDO ALUMNO...</div>
 </div>
 
-<!-- MODAL DE ÉXITO -->
 <div id="modalExito" class="modal-exito">
     <div class="modal-content">
         <div class="modal-icon">✅</div>
@@ -281,18 +264,13 @@
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
+    const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
 
     let fotoFile = null;
     let fotoDataURL = null;
 
-    // Generar ID único manual
-    function generarID() {
-        return Date.now().toString(36) + Math.random().toString(36).substr(2, 8).toUpperCase();
-    }
-
-    // Generar usuario
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const ap = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
@@ -301,13 +279,11 @@
             document.getElementById('usuarioGenerado').textContent = usuario;
             document.getElementById('usuarioPreview').style.display = 'block';
             return usuario;
-        } else {
-            document.getElementById('usuarioPreview').style.display = 'none';
-            return null;
         }
+        document.getElementById('usuarioPreview').style.display = 'none';
+        return null;
     }
 
-    // Generar contraseña fácil
     function generarContrasena(nombre, apellido) {
         const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
         const mes = meses[new Date().getMonth()];
@@ -337,13 +313,39 @@
         input.click();
     }
 
+    // Compresión de imagen antes de subir
     function procesarFoto(file) {
         if (!file) return;
-        fotoFile = file;
+        
         const reader = new FileReader();
         reader.onload = (event) => {
-            fotoDataURL = event.target.result;
-            document.getElementById('fotoPreview').innerHTML = `<img src="${fotoDataURL}" alt="Foto">`;
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                
+                // Redimensionar a 800px de ancho máximo
+                let width = img.width;
+                let height = img.height;
+                const maxWidth = 800;
+                
+                if (width > maxWidth) {
+                    height = (height * maxWidth) / width;
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                // Comprimir a calidad 0.7
+                canvas.toBlob((blob) => {
+                    fotoFile = blob;
+                    fotoDataURL = canvas.toDataURL('image/jpeg', 0.7);
+                    document.getElementById('fotoPreview').innerHTML = `<img src="${fotoDataURL}" alt="Foto">`;
+                }, 'image/jpeg', 0.7);
+            };
+            img.src = event.target.result;
         };
         reader.readAsDataURL(file);
     }
@@ -352,15 +354,13 @@
         document.getElementById('loaderOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
-    function mostrarModal(email, usuario, contrasena, id) {
-        const modalInfo = document.getElementById('modalInfo');
-        modalInfo.innerHTML = `
-            <p>📧 <strong>Email:</strong> ${email}</p>
-            <p>👤 <strong>Usuario:</strong> ${usuario}</p>
-            <p>🔑 <strong>Contraseña:</strong> ${contrasena}</p>
-            <p>🆔 <strong>ID:</strong> ${id}</p>
-            <p>✅ <strong>Estado:</strong> ACTIVO</p>
-            <p>📁 <strong>Guardado en:</strong> Firestore</p>
+    function mostrarModal(email, usuario, contrasena, uid) {
+        document.getElementById('modalInfo').innerHTML = `
+            <p>📧 Email: ${email}</p>
+            <p>👤 Usuario: ${usuario}</p>
+            <p>🔑 Contraseña: ${contrasena}</p>
+            <p>✅ Estado: ACTIVO</p>
+            <p>🆔 ID: ${uid.substring(0, 8)}...</p>
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
@@ -392,67 +392,72 @@
         const apPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
         const apMaterno = document.getElementById('apellidoMaterno').value.trim().toUpperCase();
         const telefono = document.getElementById('telefono').value.trim();
-        const email = document.getElementById('email').value.trim();
+        const email = document.getElementById('email').value.trim().toLowerCase();
         const fechaNacimiento = document.getElementById('fechaNacimiento').value;
         const emergencia1 = document.getElementById('emergencia1').value.trim();
         const emergencia2 = document.getElementById('emergencia2').value.trim();
         const usuario = generarUsuario();
         const contrasena = generarContrasena(nombre, apPaterno);
-        const idUnico = generarID();
 
-        if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1) {
+        if (!nombre || !apPaterno || !telefono || !email || !fechaNacimiento || !emergencia1) {
             alert('❌ Completa todos los campos obligatorios');
             return;
         }
 
         mostrarLoader(true);
         document.getElementById('btnRegistrar').disabled = true;
-        document.getElementById('btnRegistrar').textContent = '⏳ REGISTRANDO...';
 
         try {
-            console.log('1. Generando ID:', idUnico);
-            
+            // 1. Crear usuario en Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(email, contrasena);
+            const uid = userCredential.user.uid;
+            console.log('✅ Usuario creado en Auth');
+
+            // 2. Subir foto a Storage (si hay)
             let fotoURL = '';
             if (fotoFile) {
-                console.log('2. Subiendo foto...');
-                const storageRef = storage.ref().child(`fotos_alumnos/${idUnico}.jpg`);
+                const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
                 await storageRef.put(fotoFile);
                 fotoURL = await storageRef.getDownloadURL();
-                console.log('✅ Foto subida:', fotoURL);
+                console.log('✅ Foto subida a Storage');
             }
 
-            const alumnoData = {
-                id: idUnico,
+            // 3. Guardar en Firestore
+            await db.collection('alumnos').doc(uid).set({
+                uid: uid,
                 usuario: usuario,
                 nombre: nombre,
                 apellidoPaterno: apPaterno,
-                apellidoMaterno: apMaterno,
+                apellidoMaterno: apMaterno || '',
                 telefono: telefono,
                 email: email,
                 fechaNacimiento: fechaNacimiento,
                 telefonoEmergencia1: emergencia1,
                 telefonoEmergencia2: emergencia2 || '',
                 rol: 'estudiante',
-                estado: 'activo',  // ← ESTADO ACTIVO para futuros usos
+                estado: 'activo',
                 fotoURL: fotoURL,
                 contrasena: contrasena,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            });
+            console.log('✅ Alumno guardado en Firestore');
 
-            console.log('3. Guardando en Firestore:', alumnoData);
+            // Cerrar sesión del nuevo alumno (para que no afecte al admin)
+            await auth.signOut();
             
-            // Guardar en Firestore con ID único
-            await db.collection('alumnos').doc(idUnico).set(alumnoData);
-            console.log('✅ Documento guardado en Firestore en colección "alumnos"');
-
-            // Ocultar loader y mostrar modal
             mostrarLoader(false);
-            mostrarModal(email, usuario, contrasena, idUnico);
+            mostrarModal(email, usuario, contrasena, uid);
 
         } catch (error) {
-            console.error('❌ ERROR DETALLADO:', error);
+            console.error('❌ Error:', error);
             mostrarLoader(false);
-            alert('❌ Error al registrar: ' + error.message);
+            let mensaje = '';
+            if (error.code === 'auth/email-already-in-use') {
+                mensaje = '❌ Este email ya está registrado';
+            } else {
+                mensaje = '❌ Error: ' + error.message;
+            }
+            alert(mensaje);
             document.getElementById('btnRegistrar').disabled = false;
             document.getElementById('btnRegistrar').textContent = '✅ REGISTRAR ALUMNO';
         }
