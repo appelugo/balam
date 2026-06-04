@@ -76,7 +76,6 @@
         }
         .btn-registrar:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
         
-        /* Loader */
         .loader-overlay {
             display: none;
             position: fixed;
@@ -140,7 +139,6 @@
             50% { opacity: 1; }
         }
         
-        /* Modal de éxito */
         .modal-exito {
             display: none;
             position: fixed;
@@ -313,7 +311,6 @@
         input.click();
     }
 
-    // Compresión de imagen antes de subir
     function procesarFoto(file) {
         if (!file) return;
         
@@ -324,7 +321,6 @@
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
                 
-                // Redimensionar a 800px de ancho máximo
                 let width = img.width;
                 let height = img.height;
                 const maxWidth = 800;
@@ -338,7 +334,6 @@
                 canvas.height = height;
                 ctx.drawImage(img, 0, 0, width, height);
                 
-                // Comprimir a calidad 0.7
                 canvas.toBlob((blob) => {
                     fotoFile = blob;
                     fotoDataURL = canvas.toDataURL('image/jpeg', 0.7);
@@ -360,7 +355,6 @@
             <p>👤 Usuario: ${usuario}</p>
             <p>🔑 Contraseña: ${contrasena}</p>
             <p>✅ Estado: ACTIVO</p>
-            <p>🆔 ID: ${uid.substring(0, 8)}...</p>
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
@@ -408,21 +402,18 @@
         document.getElementById('btnRegistrar').disabled = true;
 
         try {
-            // 1. Crear usuario en Authentication
             const userCredential = await auth.createUserWithEmailAndPassword(email, contrasena);
             const uid = userCredential.user.uid;
             console.log('✅ Usuario creado en Auth');
 
-            // 2. Subir foto a Storage (si hay)
             let fotoURL = '';
-            if (fotoFile) {
+            if (fotoDataURL) {
                 const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
-                await storageRef.put(fotoFile);
+                await storageRef.putString(fotoDataURL, 'data_url');
                 fotoURL = await storageRef.getDownloadURL();
-                console.log('✅ Foto subida a Storage');
+                console.log('✅ Foto subida');
             }
 
-            // 3. Guardar en Firestore
             await db.collection('alumnos').doc(uid).set({
                 uid: uid,
                 usuario: usuario,
@@ -440,9 +431,8 @@
                 contrasena: contrasena,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
             });
-            console.log('✅ Alumno guardado en Firestore');
+            console.log('✅ Guardado en Firestore');
 
-            // Cerrar sesión del nuevo alumno (para que no afecte al admin)
             await auth.signOut();
             
             mostrarLoader(false);
