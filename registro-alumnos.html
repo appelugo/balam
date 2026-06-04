@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
     <title>Registrar Alumno - Academia BALAM</title>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
@@ -75,7 +74,7 @@
         }
         .btn-registrar:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
         
-        /* LOADER CON ESTELA DE LUZ (la imagen NO gira) */
+        /* Loader */
         .loader-overlay {
             display: none;
             position: fixed;
@@ -105,7 +104,6 @@
             position: relative;
             z-index: 2;
         }
-        /* Círculo con estela de luz (gira SOLO el círculo) */
         .light-ring {
             position: absolute;
             top: -10px;
@@ -126,7 +124,6 @@
             border-radius: 50%;
             background: conic-gradient(from 0deg, transparent, #FFD700, #FFA500, transparent);
             animation: rotateLight 1.5s linear infinite;
-            z-index: 1;
         }
         .light-ring::after {
             content: '';
@@ -137,7 +134,6 @@
             bottom: 2px;
             background: #0a0a0a;
             border-radius: 50%;
-            z-index: 2;
         }
         @keyframes rotateLight {
             0% { transform: rotate(0deg); }
@@ -155,7 +151,7 @@
             50% { opacity: 1; }
         }
         
-        /* MODAL DE ÉXITO */
+        /* Modal de éxito */
         .modal-exito {
             display: none;
             position: fixed;
@@ -178,15 +174,8 @@
             text-align: center;
             animation: fadeInUp 0.3s ease;
         }
-        .modal-icon {
-            font-size: 70px;
-            margin-bottom: 15px;
-        }
-        .modal-content h2 {
-            color: #00ff00;
-            font-size: 26px;
-            margin-bottom: 20px;
-        }
+        .modal-icon { font-size: 70px; margin-bottom: 15px; }
+        .modal-content h2 { color: #00ff00; font-size: 26px; margin-bottom: 20px; }
         .info-box {
             background: #0a0a0a;
             border-radius: 16px;
@@ -194,47 +183,16 @@
             margin: 20px 0;
             text-align: left;
         }
-        .info-box p {
-            color: #FFD700;
-            margin: 12px 0;
-            font-size: 14px;
-            word-break: break-all;
-        }
-        .info-box .password {
-            background: #252525;
-            padding: 8px;
-            border-radius: 10px;
-            font-family: monospace;
-            font-size: 18px;
-            text-align: center;
-            letter-spacing: 2px;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-top: 10px;
-        }
+        .info-box p { color: #FFD700; margin: 12px 0; font-size: 14px; word-break: break-all; }
+        .modal-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
         .btn-modal-primary {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
+            color: #000; border: none; padding: 12px 25px; border-radius: 30px;
+            font-size: 14px; font-weight: bold; cursor: pointer;
         }
         .btn-modal-secondary {
-            background: #2a2a2a;
-            color: #FFD700;
-            border: 1px solid #FFD700;
-            padding: 12px 25px;
-            border-radius: 30px;
-            font-size: 14px;
-            font-weight: bold;
-            cursor: pointer;
+            background: #2a2a2a; color: #FFD700; border: 1px solid #FFD700;
+            padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer;
         }
         @keyframes fadeInUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -281,17 +239,17 @@
             <div id="usuarioPreview" class="usuario-card" style="display: none;">
                 <div class="usuario-label">👤 USUARIO GENERADO</div>
                 <div class="usuario-value" id="usuarioGenerado"></div>
-                <div style="font-size: 10px; color: #888;">Este será su usuario para iniciar sesión</div>
+                <div style="font-size: 10px; color: #888;">Usuario para iniciar sesión</div>
             </div>
             <button class="btn-registrar" id="btnRegistrar" onclick="registrarAlumno()">✅ REGISTRAR ALUMNO</button>
         </div>
     </div>
 </div>
 
-<!-- LOADER CON ESTELA DE LUZ -->
+<!-- LOADER -->
 <div id="loaderOverlay" class="loader-overlay">
     <div class="loader-logo">
-        <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+        <img src="logo.png" alt="Logo" onerror="this.style.display='none'">
         <div class="light-ring"></div>
     </div>
     <div class="loader-text">REGISTRANDO ALUMNO...</div>
@@ -323,25 +281,18 @@
     if (!firebase.apps.length) {
         firebase.initializeApp(firebaseConfig);
     }
-    const auth = firebase.auth();
     const db = firebase.firestore();
     const storage = firebase.storage();
 
     let fotoFile = null;
     let fotoDataURL = null;
-    let ultimoUid = null;
-    let ultimaContrasena = null;
 
-    // Generar contraseña fácil de recordar
-    function generarContrasena(nombre, apellido) {
-        const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-        const mes = meses[new Date().getMonth()];
-        const anio = new Date().getFullYear();
-        const nombreCorto = nombre.substring(0, 3);
-        const apCorto = apellido.substring(0, 3);
-        return `${nombreCorto}${apCorto}${mes}${anio}`.toUpperCase();
+    // Generar ID único manual
+    function generarID() {
+        return Date.now().toString(36) + Math.random().toString(36).substr(2, 8).toUpperCase();
     }
 
+    // Generar usuario
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const ap = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
@@ -354,6 +305,16 @@
             document.getElementById('usuarioPreview').style.display = 'none';
             return null;
         }
+    }
+
+    // Generar contraseña fácil
+    function generarContrasena(nombre, apellido) {
+        const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+        const mes = meses[new Date().getMonth()];
+        const anio = new Date().getFullYear();
+        const nombreCorto = nombre.substring(0, 3);
+        const apCorto = apellido.substring(0, 3);
+        return `${nombreCorto}${apCorto}${mes}${anio}`.toUpperCase();
     }
 
     document.getElementById('nombre').addEventListener('input', generarUsuario);
@@ -391,14 +352,15 @@
         document.getElementById('loaderOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
-    function mostrarModal(email, usuario, contrasena) {
+    function mostrarModal(email, usuario, contrasena, id) {
         const modalInfo = document.getElementById('modalInfo');
         modalInfo.innerHTML = `
             <p>📧 <strong>Email:</strong> ${email}</p>
             <p>👤 <strong>Usuario:</strong> ${usuario}</p>
-            <p>🔑 <strong>Contraseña:</strong></p>
-            <div class="password">${contrasena}</div>
-            <p style="font-size: 12px; color: #888; margin-top: 10px;">📁 Guardado en Authentication + Firestore</p>
+            <p>🔑 <strong>Contraseña:</strong> ${contrasena}</p>
+            <p>🆔 <strong>ID:</strong> ${id}</p>
+            <p>✅ <strong>Estado:</strong> ACTIVO</p>
+            <p>📁 <strong>Guardado en:</strong> Firestore</p>
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
@@ -413,8 +375,7 @@
         document.getElementById('fechaNacimiento').value = '';
         document.getElementById('emergencia1').value = '';
         document.getElementById('emergencia2').value = '';
-        document.getElementById('password') && (document.getElementById('password').value = '');
-        document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
+        document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder">📷</div>';
         document.getElementById('usuarioPreview').style.display = 'none';
         fotoFile = null;
         fotoDataURL = null;
@@ -437,6 +398,7 @@
         const emergencia2 = document.getElementById('emergencia2').value.trim();
         const usuario = generarUsuario();
         const contrasena = generarContrasena(nombre, apPaterno);
+        const idUnico = generarID();
 
         if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1) {
             alert('❌ Completa todos los campos obligatorios');
@@ -448,23 +410,19 @@
         document.getElementById('btnRegistrar').textContent = '⏳ REGISTRANDO...';
 
         try {
-            // 1. Crear en Authentication
-            const userCredential = await auth.createUserWithEmailAndPassword(email, contrasena);
-            const uid = userCredential.user.uid;
-            console.log('✅ Usuario creado en Auth:', uid);
-
-            // 2. Subir foto
+            console.log('1. Generando ID:', idUnico);
+            
             let fotoURL = '';
             if (fotoFile) {
-                const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
+                console.log('2. Subiendo foto...');
+                const storageRef = storage.ref().child(`fotos_alumnos/${idUnico}.jpg`);
                 await storageRef.put(fotoFile);
                 fotoURL = await storageRef.getDownloadURL();
-                console.log('✅ Foto subida');
+                console.log('✅ Foto subida:', fotoURL);
             }
 
-            // 3. Guardar en Firestore
             const alumnoData = {
-                uid: uid,
+                id: idUnico,
                 usuario: usuario,
                 nombre: nombre,
                 apellidoPaterno: apPaterno,
@@ -475,29 +433,26 @@
                 telefonoEmergencia1: emergencia1,
                 telefonoEmergencia2: emergencia2 || '',
                 rol: 'estudiante',
-                activo: true,
+                estado: 'activo',  // ← ESTADO ACTIVO para futuros usos
                 fotoURL: fotoURL,
                 contrasena: contrasena,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            await db.collection('alumnos').doc(uid).set(alumnoData);
-            console.log('✅ Alumno guardado en Firestore');
+            console.log('3. Guardando en Firestore:', alumnoData);
+            
+            // Guardar en Firestore con ID único
+            await db.collection('alumnos').doc(idUnico).set(alumnoData);
+            console.log('✅ Documento guardado en Firestore en colección "alumnos"');
 
             // Ocultar loader y mostrar modal
             mostrarLoader(false);
-            mostrarModal(email, usuario, contrasena);
+            mostrarModal(email, usuario, contrasena, idUnico);
 
         } catch (error) {
-            console.error('❌ ERROR:', error);
+            console.error('❌ ERROR DETALLADO:', error);
             mostrarLoader(false);
-            let mensaje = '';
-            if (error.code === 'auth/email-already-in-use') {
-                mensaje = '❌ Este email ya está registrado';
-            } else {
-                mensaje = '❌ Error: ' + error.message;
-            }
-            alert(mensaje);
+            alert('❌ Error al registrar: ' + error.message);
             document.getElementById('btnRegistrar').disabled = false;
             document.getElementById('btnRegistrar').textContent = '✅ REGISTRAR ALUMNO';
         }
