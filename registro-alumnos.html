@@ -50,11 +50,11 @@
         label { display: block; color: #FFD700; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
         label .required { color: #ff6666; }
         label .opcional { color: #888; font-weight: normal; }
-        input {
+        input, select {
             width: 100%; padding: 12px 14px; background: #252525;
             border: 1px solid #3a3a3a; border-radius: 14px; color: #fff; font-size: 14px;
         }
-        input:focus { outline: none; border-color: #FFD700; }
+        input:focus, select:focus { outline: none; border-color: #FFD700; }
         .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .separator { height: 1px; background: #333; margin: 20px 0 15px 0; }
         .separator span {
@@ -214,6 +214,17 @@
                 <div class="form-group"><label>EMAIL <span class="required">*</span></label><input type="email" id="email" placeholder="alumno@ejemplo.com"></div>
             </div>
             <div class="form-group"><label>FECHA DE NACIMIENTO <span class="required">*</span></label><input type="date" id="fechaNacimiento"></div>
+            
+            <!-- NUEVO CAMPO: MÉTODO DE PAGO -->
+            <div class="form-group">
+                <label>💳 MÉTODO DE PAGO <span class="required">*</span></label>
+                <select id="metodoPago" required>
+                    <option value="">SELECCIONAR...</option>
+                    <option value="CLASE">CLASE</option>
+                    <option value="PAGO">PAGO</option>
+                </select>
+            </div>
+            
             <div class="separator"><span>📞 CONTACTOS DE EMERGENCIA</span></div>
             <div class="form-group"><label>TELÉFONO EMERGENCIA 1 <span class="required">*</span></label><input type="tel" id="emergencia1" placeholder="55 9876 5432"></div>
             <div class="form-group"><label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label><input type="tel" id="emergencia2" placeholder="55 8765 4321"></div>
@@ -265,7 +276,22 @@
     const db = firebase.firestore();
 
     let fotoBase64 = '';
-    let fotoDataURL = null;
+
+    // Convertir texto a MAYÚSCULAS automáticamente
+    function mayusculas(input) {
+        return input.toUpperCase();
+    }
+
+    // Aplicar mayúsculas a todos los campos de texto
+    const camposTexto = ['nombre', 'apellidoPaterno', 'apellidoMaterno', 'telefono', 'email', 'emergencia1', 'emergencia2'];
+    camposTexto.forEach(id => {
+        const elemento = document.getElementById(id);
+        if (elemento) {
+            elemento.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+        }
+    });
 
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
@@ -289,7 +315,6 @@
         return `${nombreCorto}${apCorto}${mes}${anio}`.toUpperCase();
     }
 
-    // Función para redimensionar imagen (tomada de tu código que funciona)
     function resizeImage(base64, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -342,13 +367,12 @@
         const reader = new FileReader();
         reader.onload = async (event) => {
             try {
-                // Reducir la imagen usando la misma función que funciona en tu otro código
                 const resizedImage = await resizeImage(event.target.result, 800, 0.7);
                 fotoBase64 = resizedImage;
                 document.getElementById('fotoPreview').innerHTML = `<img src="${fotoBase64}" alt="Foto">`;
-                console.log('✅ Foto procesada y comprimida');
+                console.log('✅ Foto procesada');
             } catch (error) {
-                console.error('Error al procesar foto:', error);
+                console.error('Error:', error);
             }
         };
         reader.readAsDataURL(file);
@@ -358,13 +382,14 @@
         document.getElementById('loaderOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
-    function mostrarModal(email, usuario, contrasena, uid) {
+    function mostrarModal(email, usuario, contrasena, uid, metodoPago) {
         document.getElementById('modalInfo').innerHTML = `
-            <p>📧 Email: ${email}</p>
-            <p>👤 Usuario: ${usuario}</p>
-            <p>🔑 Contraseña: ${contrasena}</p>
-            <p>✅ Estado: ACTIVO</p>
-            ${fotoBase64 ? '<p>📸 Foto: Guardada en Base64</p>' : ''}
+            <p>📧 EMAIL: ${email}</p>
+            <p>👤 USUARIO: ${usuario}</p>
+            <p>🔑 CONTRASEÑA: ${contrasena}</p>
+            <p>💳 MÉTODO DE PAGO: ${metodoPago}</p>
+            <p>✅ ESTADO: ACTIVO</p>
+            ${fotoBase64 ? '<p>📸 FOTO: GUARDADA</p>' : ''}
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
@@ -377,6 +402,7 @@
         document.getElementById('telefono').value = '';
         document.getElementById('email').value = '';
         document.getElementById('fechaNacimiento').value = '';
+        document.getElementById('metodoPago').value = '';
         document.getElementById('emergencia1').value = '';
         document.getElementById('emergencia2').value = '';
         document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder">📷</div>';
@@ -394,16 +420,17 @@
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
         const apPaterno = document.getElementById('apellidoPaterno').value.trim().toUpperCase();
         const apMaterno = document.getElementById('apellidoMaterno').value.trim().toUpperCase();
-        const telefono = document.getElementById('telefono').value.trim();
+        const telefono = document.getElementById('telefono').value.trim().toUpperCase();
         const email = document.getElementById('email').value.trim().toLowerCase();
         const fechaNacimiento = document.getElementById('fechaNacimiento').value;
-        const emergencia1 = document.getElementById('emergencia1').value.trim();
-        const emergencia2 = document.getElementById('emergencia2').value.trim();
+        const metodoPago = document.getElementById('metodoPago').value;
+        const emergencia1 = document.getElementById('emergencia1').value.trim().toUpperCase();
+        const emergencia2 = document.getElementById('emergencia2').value.trim().toUpperCase();
         const usuario = generarUsuario();
         const contrasena = generarContrasena(nombre, apPaterno);
 
-        if (!nombre || !apPaterno || !telefono || !email || !fechaNacimiento || !emergencia1) {
-            alert('❌ Completa todos los campos obligatorios');
+        if (!nombre || !apPaterno || !telefono || !email || !fechaNacimiento || !emergencia1 || !metodoPago) {
+            alert('❌ COMPLETA TODOS LOS CAMPOS OBLIGATORIOS');
             return;
         }
 
@@ -411,12 +438,10 @@
         document.getElementById('btnRegistrar').disabled = true;
 
         try {
-            // 1. Crear usuario en Authentication
             const userCredential = await auth.createUserWithEmailAndPassword(email, contrasena);
             const uid = userCredential.user.uid;
             console.log('✅ Usuario creado en Auth');
 
-            // 2. Guardar en Firestore (la foto va como Base64 directamente)
             await db.collection('alumnos').doc(uid).set({
                 uid: uid,
                 usuario: usuario,
@@ -426,30 +451,30 @@
                 telefono: telefono,
                 email: email,
                 fechaNacimiento: fechaNacimiento,
+                metodoPago: metodoPago,
                 telefonoEmergencia1: emergencia1,
                 telefonoEmergencia2: emergencia2 || '',
                 rol: 'estudiante',
                 estado: 'activo',
-                fotoBase64: fotoBase64 || '',  // La foto se guarda como Base64 en Firestore
+                fotoBase64: fotoBase64 || '',
                 contrasena: contrasena,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
             });
-            console.log('✅ Alumno guardado en Firestore con foto en Base64');
+            console.log('✅ Alumno guardado en Firestore');
 
-            // Cerrar sesión del nuevo alumno
             await auth.signOut();
             
             mostrarLoader(false);
-            mostrarModal(email, usuario, contrasena, uid);
+            mostrarModal(email, usuario, contrasena, uid, metodoPago);
 
         } catch (error) {
             console.error('❌ Error:', error);
             mostrarLoader(false);
             let mensaje = '';
             if (error.code === 'auth/email-already-in-use') {
-                mensaje = '❌ Este email ya está registrado';
+                mensaje = '❌ ESTE EMAIL YA ESTÁ REGISTRADO';
             } else {
-                mensaje = '❌ Error: ' + error.message;
+                mensaje = '❌ ERROR: ' + error.message;
             }
             alert(mensaje);
             document.getElementById('btnRegistrar').disabled = false;
