@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Alumno - SIN FOTO</title>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-firestore-compat.js"></script>
+</head>
+<body style="background:#000; color:#FFD700; padding:20px;">
+    <h1>REGISTRAR ALUMNO (SIN FOTO)</h1>
+    
+    <input type="text" id="nombre" placeholder="Nombre">
+    <input type="text" id="apellidoPaterno" placeholder="Apellido Paterno">
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Contraseña">
+    <button onclick="registrar()">Registrar</button>
+    <pre id="log"></pre>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDtlEE7cmyjWvppnO9JDu1A3OsNxpCr5Nc",
+            authDomain: "balam-4e843.firebaseapp.com",
+            projectId: "balam-4e843",
+            storageBucket: "balam-4e843.firebasestorage.app",
+            messagingSenderId: "633718462390",
+            appId: "1:633718462390:web:aaefbe4bf1cc3917fc5317"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        function log(msg) {
+            const pre = document.getElementById('log');
+            pre.textContent += msg + '\n';
+            console.log(msg);
+        }
+
+        async function registrar() {
+            const nombre = document.getElementById('nombre').value.trim();
+            const ap = document.getElementById('apellidoPaterno').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const id = Date.now().toString();
+
+            log('1. Intentando guardar...');
+            
+            try {
+                await db.collection('alumnos').doc(id).set({
+                    id: id,
+                    nombre: nombre.toUpperCase(),
+                    apellido: ap,
+                    email: email,
+                    contrasena: password,
+                    fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
+                });
+                log('✅ GUARDADO EXITOSO');
+                log('📁 Colección "alumnos" creada');
+            } catch (error) {
+                log('❌ ERROR: ' + error.message);
+            }
+        }
+    </script>
+</body>
+</html>
