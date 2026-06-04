@@ -53,10 +53,18 @@
             border-radius: 30px;
             color: white;
             font-size: 14px;
+            autocomplete: off;
         }
         .buscador input:focus {
             outline: none;
             border-color: #FFD700;
+        }
+        .buscador input:-webkit-autofill,
+        .buscador input:-webkit-autofill:hover,
+        .buscador input:-webkit-autofill:focus,
+        .buscador input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 30px #252525 inset !important;
+            -webkit-text-fill-color: white !important;
         }
         .stats {
             display: flex;
@@ -134,18 +142,34 @@
             font-weight: bold;
             display: inline-block;
         }
-        .btn-editar {
-            background: #FFD700;
-            color: #000;
+        .btn-accion {
+            background: transparent;
             border: none;
-            padding: 6px 12px;
-            border-radius: 20px;
             cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 18px;
+            padding: 6px;
+            margin: 0 4px;
+            transition: all 0.2s;
+            border-radius: 8px;
+        }
+        .btn-editar {
+            color: #FFD700;
         }
         .btn-editar:hover {
-            transform: scale(1.05);
+            background: #FFD700;
+            color: #000;
+            transform: scale(1.1);
+        }
+        .btn-eliminar {
+            color: #ff6666;
+        }
+        .btn-eliminar:hover {
+            background: #ff6666;
+            color: #000;
+            transform: scale(1.1);
+        }
+        .acciones {
+            white-space: nowrap;
         }
         /* Modal */
         .modal {
@@ -235,11 +259,62 @@
             color: #FFD700;
             padding: 40px;
         }
+        /* Modal de confirmación de eliminación */
+        .confirm-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2100;
+            justify-content: center;
+            align-items: center;
+        }
+        .confirm-modal-content {
+            background: #1a1a1a;
+            border-radius: 28px;
+            border: 2px solid #ff6666;
+            max-width: 380px;
+            width: 90%;
+            padding: 30px 25px;
+            text-align: center;
+        }
+        .confirm-modal-content h3 {
+            color: #ff6666;
+            margin-bottom: 15px;
+        }
+        .confirm-modal-content p {
+            color: #ddd;
+            margin-bottom: 20px;
+        }
+        .confirm-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        .btn-confirmar-si {
+            background: #ff6666;
+            color: #000;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .btn-confirmar-no {
+            background: #333;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 10px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+        }
         @media (max-width: 800px) {
             th, td { padding: 8px 6px; font-size: 11px; }
-            .btn-editar { padding: 4px 8px; font-size: 10px; }
             .foto-thumb { width: 30px; height: 30px; }
             .sin-foto { width: 30px; height: 30px; font-size: 14px; }
+            .btn-accion { font-size: 14px; padding: 4px; }
         }
     </style>
 </head>
@@ -252,7 +327,12 @@
     </div>
 
     <div class="buscador">
-        <input type="text" id="searchInput" placeholder="🔍 Buscar por nombre, email o teléfono..." autocomplete="off">
+        <input type="text" id="searchInput" 
+               placeholder="🔍 Buscar por nombre, email o teléfono..." 
+               autocomplete="off"
+               autofill="off"
+               name="searchfield"
+               spellcheck="false">
     </div>
 
     <div class="stats">
@@ -276,35 +356,35 @@
         
         <div class="form-group">
             <label>NOMBRE(S)</label>
-            <input type="text" id="editNombre" style="text-transform: uppercase;">
+            <input type="text" id="editNombre" style="text-transform: uppercase;" autocomplete="off">
         </div>
         <div class="form-group">
             <label>APELLIDO PATERNO</label>
-            <input type="text" id="editApellidoPaterno" style="text-transform: uppercase;">
+            <input type="text" id="editApellidoPaterno" style="text-transform: uppercase;" autocomplete="off">
         </div>
         <div class="form-group">
             <label>APELLIDO MATERNO</label>
-            <input type="text" id="editApellidoMaterno" style="text-transform: uppercase;">
+            <input type="text" id="editApellidoMaterno" style="text-transform: uppercase;" autocomplete="off">
         </div>
         <div class="form-group">
             <label>TELÉFONO</label>
-            <input type="tel" id="editTelefono">
+            <input type="tel" id="editTelefono" autocomplete="off">
         </div>
         <div class="form-group">
             <label>EMAIL</label>
-            <input type="email" id="editEmail">
+            <input type="email" id="editEmail" autocomplete="off">
         </div>
         <div class="form-group">
             <label>FECHA DE NACIMIENTO</label>
-            <input type="date" id="editFechaNacimiento">
+            <input type="date" id="editFechaNacimiento" autocomplete="off">
         </div>
         <div class="form-group">
             <label>TELÉFONO EMERGENCIA 1</label>
-            <input type="tel" id="editEmergencia1">
+            <input type="tel" id="editEmergencia1" autocomplete="off">
         </div>
         <div class="form-group">
             <label>TELÉFONO EMERGENCIA 2 (opcional)</label>
-            <input type="tel" id="editEmergencia2">
+            <input type="tel" id="editEmergencia2" autocomplete="off">
         </div>
         <div class="form-group">
             <label>MÉTODO DE PAGO</label>
@@ -322,11 +402,24 @@
         </div>
         <div class="form-group">
             <label>🔑 NUEVA CONTRASEÑA (dejar vacío para no cambiar)</label>
-            <input type="password" id="editContrasena" placeholder="Mínimo 6 caracteres" autocomplete="off">
+            <input type="password" id="editContrasena" placeholder="Mínimo 6 caracteres" autocomplete="new-password">
         </div>
         <div class="modal-buttons">
             <button class="btn-guardar" onclick="guardarCambios()">💾 GUARDAR</button>
             <button class="btn-cancelar" onclick="cerrarModal()">CANCELAR</button>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL DE CONFIRMACIÓN DE ELIMINACIÓN -->
+<div id="confirmDeleteModal" class="confirm-modal">
+    <div class="confirm-modal-content">
+        <h3>⚠️ ELIMINAR ALUMNO</h3>
+        <p id="deleteMessage">¿Estás seguro de que deseas eliminar este alumno?</p>
+        <p style="font-size: 12px; color:#888;">Esta acción no se puede deshacer.</p>
+        <div class="confirm-buttons">
+            <button class="btn-confirmar-si" onclick="confirmarEliminar()">SÍ, ELIMINAR</button>
+            <button class="btn-confirmar-no" onclick="cerrarConfirmarModal()">CANCELAR</button>
         </div>
     </div>
 </div>
@@ -349,6 +442,7 @@
 
     let allAlumnos = [];
     let filteredAlumnos = [];
+    let alumnoAEliminar = null;
 
     async function cargarAlumnos() {
         const container = document.getElementById('tablaContainer');
@@ -443,7 +537,10 @@
                     <td>${alumno.telefonoEmergencia1 || ''}</td>
                     <td>${alumno.metodoPago || 'CLASE'}</td>
                     <td><span class="${estadoClass}">${estadoText}</span></td>
-                    <td><button class="btn-editar" onclick="abrirModal('${alumno.id}')">✏️ EDITAR</button></td>
+                    <td class="acciones">
+                        <button class="btn-accion btn-editar" onclick="abrirModal('${alumno.id}')" title="Editar">✏️</button>
+                        <button class="btn-accion btn-eliminar" onclick="preguntarEliminar('${alumno.id}', '${nombreCompleto}')" title="Eliminar">🗑️</button>
+                    </td>
                 </tr>
             `;
         });
@@ -473,7 +570,6 @@
         document.getElementById('editEstado').value = alumnoEditando.estado || 'activo';
         document.getElementById('editContrasena').value = '';
         
-        // Mostrar foto en modal
         const modalFoto = document.getElementById('modalFoto');
         if (alumnoEditando.fotoBase64 && alumnoEditando.fotoBase64.startsWith('data:image')) {
             modalFoto.innerHTML = `<img src="${alumnoEditando.fotoBase64}" alt="Foto">`;
@@ -507,16 +603,14 @@
         };
         
         try {
-            // Actualizar Firestore
             await db.collection('alumnos').doc(alumnoEditando.id).update(updates);
             
-            // Actualizar contraseña si se proporcionó
             if (nuevaContrasena && nuevaContrasena.length >= 6) {
                 const user = auth.currentUser;
                 if (user && user.uid === alumnoEditando.id) {
                     await user.updatePassword(nuevaContrasena);
                 } else {
-                    alert('⚠️ Solo puedes cambiar tu propia contraseña. Inicia sesión como administrador para cambiar la de otros.');
+                    alert('⚠️ Solo puedes cambiar tu propia contraseña.');
                 }
             }
             
@@ -529,8 +623,42 @@
         }
     }
 
-    // Evento de búsqueda
+    function preguntarEliminar(uid, nombre) {
+        alumnoAEliminar = uid;
+        document.getElementById('deleteMessage').innerHTML = `¿Estás seguro de que deseas eliminar a <strong>${nombre}</strong>?`;
+        document.getElementById('confirmDeleteModal').style.display = 'flex';
+    }
+
+    function cerrarConfirmarModal() {
+        document.getElementById('confirmDeleteModal').style.display = 'none';
+        alumnoAEliminar = null;
+    }
+
+    async function confirmarEliminar() {
+        if (!alumnoAEliminar) return;
+        
+        try {
+            // Eliminar de Firestore
+            await db.collection('alumnos').doc(alumnoAEliminar).delete();
+            
+            // Opcional: Eliminar también de Authentication
+            // (requiere permisos especiales, se puede hacer después)
+            
+            alert('✅ Alumno eliminado correctamente');
+            cerrarConfirmarModal();
+            await cargarAlumnos();
+        } catch (error) {
+            console.error('Error al eliminar:', error);
+            alert('❌ Error al eliminar: ' + error.message);
+            cerrarConfirmarModal();
+        }
+    }
+
     document.getElementById('searchInput').addEventListener('keyup', filtrarAlumnos);
+    
+    window.addEventListener('load', function() {
+        document.getElementById('searchInput').value = '';
+    });
     
     cargarAlumnos();
 </script>
