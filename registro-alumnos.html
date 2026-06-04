@@ -43,7 +43,9 @@
         .btn-foto {
             background: #2a2a2a; border: 1px solid #FFD700; padding: 8px 18px;
             border-radius: 30px; color: #FFD700; font-size: 13px; cursor: pointer;
+            transition: all 0.2s;
         }
+        .btn-foto:hover { background: #FFD700; color: #000; }
         .form-section { padding: 22px; }
         .form-group { margin-bottom: 16px; }
         label { display: block; color: #FFD700; font-size: 12px; font-weight: 600; margin-bottom: 6px; }
@@ -69,34 +71,179 @@
             width: 100%; padding: 14px; background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
             border: none; border-radius: 16px; font-size: 16px; font-weight: bold;
             color: #000; cursor: pointer; margin-top: 10px;
+            transition: all 0.3s;
         }
-        .mensaje { padding: 12px; border-radius: 14px; margin-top: 15px; text-align: center; font-size: 13px; display: none; }
-        .error { background: rgba(255, 0, 0, 0.15); border: 1px solid #ff4444; color: #ff8888; }
+        .btn-registrar:hover { transform: translateY(-2px); box-shadow: 0 5px 20px rgba(255,215,0,0.4); }
         
-        /* Modal */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.95); z-index: 1000; justify-content: center; align-items: center;
+        /* LOADER CON ESTELA DE LUZ (la imagen NO gira) */
+        .loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 25px;
+        }
+        .loader-logo {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .loader-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            position: relative;
+            z-index: 2;
+        }
+        /* Círculo con estela de luz (gira SOLO el círculo) */
+        .light-ring {
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            background: transparent;
+            z-index: 1;
+        }
+        .light-ring::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border-radius: 50%;
+            background: conic-gradient(from 0deg, transparent, #FFD700, #FFA500, transparent);
+            animation: rotateLight 1.5s linear infinite;
+            z-index: 1;
+        }
+        .light-ring::after {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            background: #0a0a0a;
+            border-radius: 50%;
+            z-index: 2;
+        }
+        @keyframes rotateLight {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loader-text {
+            color: #FFD700;
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        /* MODAL DE ÉXITO */
+        .modal-exito {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
         }
         .modal-content {
-            background: #1a1a1a; border-radius: 28px; border: 2px solid #00ff00;
-            max-width: 400px; width: 90%; padding: 30px 25px; text-align: center;
+            background: #1a1a1a;
+            border-radius: 28px;
+            border: 2px solid #00ff00;
+            max-width: 400px;
+            width: 90%;
+            padding: 35px 25px;
+            text-align: center;
+            animation: fadeInUp 0.3s ease;
         }
-        .modal-icon { font-size: 70px; margin-bottom: 15px; }
-        .modal-content h2 { color: #00ff00; font-size: 26px; margin-bottom: 20px; }
-        .info-box { background: #0a0a0a; border-radius: 16px; padding: 15px; margin: 20px 0; text-align: left; }
-        .info-box p { color: #FFD700; margin: 8px 0; font-size: 13px; word-break: break-all; }
-        .modal-buttons { display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 10px; }
+        .modal-icon {
+            font-size: 70px;
+            margin-bottom: 15px;
+        }
+        .modal-content h2 {
+            color: #00ff00;
+            font-size: 26px;
+            margin-bottom: 20px;
+        }
+        .info-box {
+            background: #0a0a0a;
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        .info-box p {
+            color: #FFD700;
+            margin: 12px 0;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .info-box .password {
+            background: #252525;
+            padding: 8px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
         .btn-modal-primary {
             background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-            color: #000; border: none; padding: 12px 20px; border-radius: 30px;
-            font-size: 14px; font-weight: bold; cursor: pointer;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
         }
         .btn-modal-secondary {
-            background: #2a2a2a; color: #FFD700; border: 1px solid #FFD700;
-            padding: 12px 20px; border-radius: 30px; font-size: 14px; font-weight: bold; cursor: pointer;
+            background: #2a2a2a;
+            color: #FFD700;
+            border: 1px solid #FFD700;
+            padding: 12px 25px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
         }
-        @media (max-width: 500px) { .row { grid-template-columns: 1fr; gap: 0; } .foto-preview { width: 100px; height: 100px; } }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @media (max-width: 500px) {
+            .row { grid-template-columns: 1fr; gap: 0; }
+            .foto-preview { width: 100px; height: 100px; }
+        }
     </style>
 </head>
 <body>
@@ -130,7 +277,6 @@
             <div class="form-group"><label>TELÉFONO EMERGENCIA 2 <span class="opcional">(Opcional)</span></label><input type="tel" id="emergencia2" placeholder="55 8765 4321"></div>
             
             <div class="separator"><span>🥋 DATOS ACADÉMICOS</span></div>
-            <div class="form-group"><label>CONTRASEÑA <span class="required">*</span></label><input type="password" id="password" placeholder="Mínimo 6 caracteres"></div>
             
             <div id="usuarioPreview" class="usuario-card" style="display: none;">
                 <div class="usuario-label">👤 USUARIO GENERADO</div>
@@ -138,12 +284,21 @@
                 <div style="font-size: 10px; color: #888;">Este será su usuario para iniciar sesión</div>
             </div>
             <button class="btn-registrar" id="btnRegistrar" onclick="registrarAlumno()">✅ REGISTRAR ALUMNO</button>
-            <div id="mensaje" class="mensaje"></div>
         </div>
     </div>
 </div>
 
-<div id="modalExito" class="modal">
+<!-- LOADER CON ESTELA DE LUZ -->
+<div id="loaderOverlay" class="loader-overlay">
+    <div class="loader-logo">
+        <img src="logo.png" alt="Logo" onerror="this.src='https://via.placeholder.com/120?text=Logo'">
+        <div class="light-ring"></div>
+    </div>
+    <div class="loader-text">REGISTRANDO ALUMNO...</div>
+</div>
+
+<!-- MODAL DE ÉXITO -->
+<div id="modalExito" class="modal-exito">
     <div class="modal-content">
         <div class="modal-icon">✅</div>
         <h2>¡ALUMNO REGISTRADO!</h2>
@@ -174,24 +329,18 @@
 
     let fotoFile = null;
     let fotoDataURL = null;
-    let adminEmail = null;
-    let adminPassword = null;
+    let ultimoUid = null;
+    let ultimaContrasena = null;
 
-    // Guardar las credenciales del admin antes de crear el alumno
-    auth.onAuthStateChanged(async (user) => {
-        if (user) {
-            adminEmail = user.email;
-            console.log('Admin actual:', adminEmail);
-            
-            // Buscar en administradores para obtener contraseña (NO es seguro, es solo para pruebas)
-            // En producción se usa reautenticación
-            const adminDoc = await db.collection('administradores').doc(user.uid).get();
-            if (adminDoc.exists) {
-                // No guardamos contraseña real, solo simulamos re-login
-                console.log('Admin autenticado correctamente');
-            }
-        }
-    });
+    // Generar contraseña fácil de recordar
+    function generarContrasena(nombre, apellido) {
+        const meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+        const mes = meses[new Date().getMonth()];
+        const anio = new Date().getFullYear();
+        const nombreCorto = nombre.substring(0, 3);
+        const apCorto = apellido.substring(0, 3);
+        return `${nombreCorto}${apCorto}${mes}${anio}`.toUpperCase();
+    }
 
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
@@ -238,39 +387,43 @@
         reader.readAsDataURL(file);
     }
 
-    function mostrarModal(email, usuario, password) {
-        document.getElementById('modalInfo').innerHTML = `
+    function mostrarLoader(mostrar) {
+        document.getElementById('loaderOverlay').style.display = mostrar ? 'flex' : 'none';
+    }
+
+    function mostrarModal(email, usuario, contrasena) {
+        const modalInfo = document.getElementById('modalInfo');
+        modalInfo.innerHTML = `
             <p>📧 <strong>Email:</strong> ${email}</p>
             <p>👤 <strong>Usuario:</strong> ${usuario}</p>
-            <p>🔑 <strong>Contraseña:</strong> ${password}</p>
-            <p>📁 <strong>Guardado en:</strong> Authentication + Firestore</p>
+            <p>🔑 <strong>Contraseña:</strong></p>
+            <div class="password">${contrasena}</div>
+            <p style="font-size: 12px; color: #888; margin-top: 10px;">📁 Guardado en Authentication + Firestore</p>
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
 
-    async function reautenticarAdmin() {
-        if (!adminEmail) {
-            console.log('No hay admin para reautenticar');
-            return false;
-        }
-        
-        try {
-            // Intentar restaurar sesión del admin (necesitas guardar la contraseña en algún lugar seguro)
-            // Esta es una solución temporal: redirigir al login si perdió sesión
-            const currentUser = auth.currentUser;
-            if (currentUser && currentUser.email === adminEmail) {
-                console.log('Admin aún autenticado');
-                return true;
-            } else {
-                console.log('Sesión perdida, redirigiendo a login...');
-                window.location.href = 'login.html';
-                return false;
-            }
-        } catch (error) {
-            console.error('Error reautenticando:', error);
-            window.location.href = 'login.html';
-            return false;
-        }
+    function registrarOtro() {
+        document.getElementById('modalExito').style.display = 'none';
+        document.getElementById('nombre').value = '';
+        document.getElementById('apellidoPaterno').value = '';
+        document.getElementById('apellidoMaterno').value = '';
+        document.getElementById('telefono').value = '';
+        document.getElementById('email').value = '';
+        document.getElementById('fechaNacimiento').value = '';
+        document.getElementById('emergencia1').value = '';
+        document.getElementById('emergencia2').value = '';
+        document.getElementById('password') && (document.getElementById('password').value = '');
+        document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
+        document.getElementById('usuarioPreview').style.display = 'none';
+        fotoFile = null;
+        fotoDataURL = null;
+        document.getElementById('btnRegistrar').disabled = false;
+        document.getElementById('btnRegistrar').textContent = '✅ REGISTRAR ALUMNO';
+    }
+
+    function irPanelPrincipal() {
+        window.location.href = 'panel-admin.html';
     }
 
     async function registrarAlumno() {
@@ -282,36 +435,31 @@
         const fechaNacimiento = document.getElementById('fechaNacimiento').value;
         const emergencia1 = document.getElementById('emergencia1').value.trim();
         const emergencia2 = document.getElementById('emergencia2').value.trim();
-        const password = document.getElementById('password').value;
         const usuario = generarUsuario();
+        const contrasena = generarContrasena(nombre, apPaterno);
 
-        if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1 || !password) {
-            mostrarMensaje('❌ Completa todos los campos obligatorios', 'error');
+        if (!nombre || !apPaterno || !apMaterno || !telefono || !email || !fechaNacimiento || !emergencia1) {
+            alert('❌ Completa todos los campos obligatorios');
             return;
         }
 
-        if (password.length < 6) {
-            mostrarMensaje('❌ La contraseña debe tener al menos 6 caracteres', 'error');
-            return;
-        }
-
-        const btn = document.getElementById('btnRegistrar');
-        btn.disabled = true;
-        btn.textContent = '⏳ REGISTRANDO...';
-        mostrarMensaje('⏳ Registrando alumno...', null);
+        mostrarLoader(true);
+        document.getElementById('btnRegistrar').disabled = true;
+        document.getElementById('btnRegistrar').textContent = '⏳ REGISTRANDO...';
 
         try {
-            // 1. Crear usuario en Authentication
-            const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+            // 1. Crear en Authentication
+            const userCredential = await auth.createUserWithEmailAndPassword(email, contrasena);
             const uid = userCredential.user.uid;
             console.log('✅ Usuario creado en Auth:', uid);
 
-            // 2. Subir foto si existe
+            // 2. Subir foto
             let fotoURL = '';
             if (fotoFile) {
                 const storageRef = storage.ref().child(`fotos_alumnos/${uid}.jpg`);
                 await storageRef.put(fotoFile);
                 fotoURL = await storageRef.getDownloadURL();
+                console.log('✅ Foto subida');
             }
 
             // 3. Guardar en Firestore
@@ -329,73 +477,30 @@
                 rol: 'estudiante',
                 activo: true,
                 fotoURL: fotoURL,
+                contrasena: contrasena,
                 fechaRegistro: firebase.firestore.FieldValue.serverTimestamp()
             };
 
             await db.collection('alumnos').doc(uid).set(alumnoData);
             console.log('✅ Alumno guardado en Firestore');
 
-            // 4. Mostrar modal de éxito
-            mostrarModal(email, usuario, password);
-
-            // 5. IMPORTANTE: Cerrar sesión del nuevo usuario y volver al admin
-            await auth.signOut();
-            console.log('Sesión del nuevo alumno cerrada');
-
-            // 6. Reautenticar al admin (redirige a login si es necesario)
-            await reautenticarAdmin();
+            // Ocultar loader y mostrar modal
+            mostrarLoader(false);
+            mostrarModal(email, usuario, contrasena);
 
         } catch (error) {
-            console.error('Error:', error);
+            console.error('❌ ERROR:', error);
+            mostrarLoader(false);
             let mensaje = '';
             if (error.code === 'auth/email-already-in-use') {
                 mensaje = '❌ Este email ya está registrado';
-            } else if (error.code === 'permission-denied') {
-                mensaje = '❌ Error de permisos en Firestore';
             } else {
                 mensaje = '❌ Error: ' + error.message;
             }
-            mostrarMensaje(mensaje, 'error');
-            btn.disabled = false;
-            btn.textContent = '✅ REGISTRAR ALUMNO';
+            alert(mensaje);
+            document.getElementById('btnRegistrar').disabled = false;
+            document.getElementById('btnRegistrar').textContent = '✅ REGISTRAR ALUMNO';
         }
-    }
-
-    function registrarOtro() {
-        document.getElementById('modalExito').style.display = 'none';
-        document.getElementById('nombre').value = '';
-        document.getElementById('apellidoPaterno').value = '';
-        document.getElementById('apellidoMaterno').value = '';
-        document.getElementById('telefono').value = '';
-        document.getElementById('email').value = '';
-        document.getElementById('fechaNacimiento').value = '';
-        document.getElementById('emergencia1').value = '';
-        document.getElementById('emergencia2').value = '';
-        document.getElementById('password').value = '';
-        document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
-        document.getElementById('usuarioPreview').style.display = 'none';
-        fotoFile = null;
-        fotoDataURL = null;
-        document.getElementById('btnRegistrar').disabled = false;
-        document.getElementById('btnRegistrar').textContent = '✅ REGISTRAR ALUMNO';
-        
-        // Recargar la página para asegurar que el admin sigue logueado
-        // Esto es temporal, en producción se usaría reautenticación
-        setTimeout(() => {
-            window.location.reload();
-        }, 500);
-    }
-
-    function irPanelPrincipal() {
-        window.location.href = 'panel-admin.html';
-    }
-
-    function mostrarMensaje(msg, tipo) {
-        const div = document.getElementById('mensaje');
-        div.innerHTML = msg;
-        div.className = 'mensaje ' + tipo;
-        div.style.display = 'block';
-        setTimeout(() => div.style.display = 'none', 4000);
     }
 </script>
 
