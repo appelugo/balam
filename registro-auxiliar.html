@@ -28,7 +28,6 @@
             margin: 0 auto;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 25px;
@@ -54,7 +53,6 @@
             margin-top: 5px;
         }
 
-        /* Tarjeta principal */
         .card {
             background: #1a1a1a;
             border-radius: 28px;
@@ -64,7 +62,6 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        /* Sección foto */
         .foto-section {
             background: linear-gradient(135deg, #0f0f0f 0%, #151515 100%);
             padding: 20px;
@@ -129,7 +126,6 @@
             transform: translateY(-2px);
         }
 
-        /* Formulario */
         .form-section {
             padding: 25px;
         }
@@ -229,6 +225,14 @@
         .btn-registrar:hover {
             transform: translateY(-2px);
             box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+        }
+
+        /* Disciplina condicional */
+        .disciplina-group {
+            display: none;
+        }
+        .disciplina-group.visible {
+            display: block;
         }
 
         /* Loader */
@@ -417,16 +421,16 @@
             <div class="row">
                 <div class="form-group">
                     <label>NOMBRE(S) <span class="required">*</span></label>
-                    <input type="text" id="nombre" placeholder="Ej. María">
+                    <input type="text" id="nombre" placeholder="Ej. MARÍA">
                 </div>
                 <div class="form-group">
                     <label>APELLIDO PATERNO <span class="required">*</span></label>
-                    <input type="text" id="apellidoPaterno" placeholder="Ej. González">
+                    <input type="text" id="apellidoPaterno" placeholder="Ej. GONZÁLEZ">
                 </div>
             </div>
             <div class="form-group">
                 <label>APELLIDO MATERNO <span class="opcional">(Opcional)</span></label>
-                <input type="text" id="apellidoMaterno" placeholder="Ej. López">
+                <input type="text" id="apellidoMaterno" placeholder="Ej. LÓPEZ">
             </div>
 
             <div class="row">
@@ -456,17 +460,6 @@
 
             <div class="row">
                 <div class="form-group">
-                    <label>PUESTO <span class="required">*</span></label>
-                    <select id="puesto">
-                        <option value="">Seleccionar...</option>
-                        <option value="INSTRUCTOR">INSTRUCTOR</option>
-                        <option value="RECEPCIONISTA">RECEPCIONISTA</option>
-                        <option value="COORDINADOR">COORDINADOR</option>
-                        <option value="ASISTENTE">ASISTENTE</option>
-                        <option value="MANTENIMIENTO">MANTENIMIENTO</option>
-                    </select>
-                </div>
-                <div class="form-group">
                     <label>ROL <span class="required">*</span></label>
                     <select id="rol">
                         <option value="">Seleccionar...</option>
@@ -476,9 +469,10 @@
                 </div>
             </div>
 
-            <div class="row">
+            <!-- Disciplina (solo visible si selecciona INSTRUCTOR) -->
+            <div id="disciplinaGroup" class="disciplina-group">
                 <div class="form-group">
-                    <label>DISCIPLINA (si aplica)</label>
+                    <label>DISCIPLINA QUE IMPARTE <span class="required">*</span></label>
                     <select id="disciplina">
                         <option value="">Seleccionar...</option>
                         <option value="ENTRENAMIENTO FUNCIONAL">ENTRENAMIENTO FUNCIONAL</option>
@@ -489,10 +483,6 @@
                         <option value="KICK BOXING">KICK BOXING</option>
                     </select>
                 </div>
-                <div class="form-group">
-                    <label>HORARIO LABORAL</label>
-                    <input type="text" id="horario" placeholder="Ej. 9:00 - 18:00">
-                </div>
             </div>
 
             <!-- Contacto de emergencia -->
@@ -501,7 +491,7 @@
             <div class="row">
                 <div class="form-group">
                     <label>NOMBRE CONTACTO <span class="required">*</span></label>
-                    <input type="text" id="emergenciaNombre" placeholder="Ej. Juan Pérez">
+                    <input type="text" id="emergenciaNombre" placeholder="Ej. JUAN PÉREZ">
                 </div>
                 <div class="form-group">
                     <label>TELÉFONO EMERGENCIA <span class="required">*</span></label>
@@ -510,7 +500,7 @@
             </div>
             <div class="form-group">
                 <label>PARENTESCO <span class="required">*</span></label>
-                <input type="text" id="emergenciaParentesco" placeholder="Ej. Esposo, Padre, Hermano">
+                <input type="text" id="emergenciaParentesco" placeholder="Ej. ESPOSO, PADRE, HERMANO">
             </div>
 
             <!-- Datos de acceso -->
@@ -573,8 +563,20 @@
     const db = firebase.firestore();
     const storage = firebase.storage();
 
-    let fotoFile = null;
     let fotoDataURL = null;
+
+    // Mostrar/ocultar disciplina según rol seleccionado
+    document.getElementById('rol').addEventListener('change', function() {
+        const disciplinaGroup = document.getElementById('disciplinaGroup');
+        if (this.value === 'instructor') {
+            disciplinaGroup.classList.add('visible');
+            document.getElementById('disciplina').required = true;
+        } else {
+            disciplinaGroup.classList.remove('visible');
+            document.getElementById('disciplina').required = false;
+            document.getElementById('disciplina').value = '';
+        }
+    });
 
     function generarUsuario() {
         const nombre = document.getElementById('nombre').value.trim().toUpperCase();
@@ -590,7 +592,7 @@
     }
 
     // Convertir a mayúsculas campos de texto
-    const camposMayusculas = ['nombre', 'apellidoPaterno', 'apellidoMaterno', 'curp', 'horario', 'emergenciaNombre', 'emergenciaParentesco'];
+    const camposMayusculas = ['nombre', 'apellidoPaterno', 'apellidoMaterno', 'curp', 'emergenciaNombre', 'emergenciaParentesco'];
     camposMayusculas.forEach(id => {
         const elemento = document.getElementById(id);
         if (elemento) {
@@ -603,7 +605,7 @@
     document.getElementById('nombre').addEventListener('input', generarUsuario);
     document.getElementById('apellidoPaterno').addEventListener('input', generarUsuario);
 
-    // Función para redimensionar imagen
+    // Función para redimensionar imagen (misma que funciona en registro-alumnos)
     function resizeImage(base64, maxWidth = 800, quality = 0.7) {
         return new Promise((resolve, reject) => {
             const img = new Image();
@@ -656,9 +658,9 @@
                 const resizedImage = await resizeImage(event.target.result, 800, 0.7);
                 fotoDataURL = resizedImage;
                 document.getElementById('fotoPreview').innerHTML = `<img src="${fotoDataURL}" alt="Foto">`;
-                console.log('✅ Foto procesada');
+                console.log('✅ Foto procesada y comprimida');
             } catch (error) {
-                console.error('Error:', error);
+                console.error('Error procesando foto:', error);
             }
         };
         reader.readAsDataURL(file);
@@ -668,14 +670,19 @@
         document.getElementById('loaderOverlay').style.display = mostrar ? 'flex' : 'none';
     }
 
-    function mostrarModal(email, usuario, password, nombre) {
+    function mostrarModal(email, usuario, password, nombre, rol, disciplina) {
+        let disciplinaText = '';
+        if (rol === 'instructor' && disciplina) {
+            disciplinaText = `<p>🥋 <strong>Disciplina:</strong> ${disciplina}</p>`;
+        }
         document.getElementById('modalInfo').innerHTML = `
             <p>👤 <strong>Nombre:</strong> ${nombre}</p>
             <p>📧 <strong>Email:</strong> ${email}</p>
             <p>👤 <strong>Usuario:</strong> ${usuario}</p>
             <p>🔑 <strong>Contraseña:</strong> ${password}</p>
+            <p>💼 <strong>Rol:</strong> ${rol === 'instructor' ? 'INSTRUCTOR' : 'AUXILIAR'}</p>
+            ${disciplinaText}
             <p>✅ <strong>Estado:</strong> ACTIVO</p>
-            <p>📁 <strong>Guardado en:</strong> Authentication + Firestore</p>
         `;
         document.getElementById('modalExito').style.display = 'flex';
     }
@@ -689,16 +696,15 @@
         document.getElementById('email').value = '';
         document.getElementById('fechaNacimiento').value = '';
         document.getElementById('curp').value = '';
-        document.getElementById('puesto').value = '';
         document.getElementById('rol').value = '';
         document.getElementById('disciplina').value = '';
-        document.getElementById('horario').value = '';
         document.getElementById('emergenciaNombre').value = '';
         document.getElementById('emergenciaTelefono').value = '';
         document.getElementById('emergenciaParentesco').value = '';
         document.getElementById('password').value = '';
         document.getElementById('fotoPreview').innerHTML = '<div class="foto-placeholder" id="fotoPlaceholder">📷</div>';
         document.getElementById('usuarioPreview').style.display = 'none';
+        document.getElementById('disciplinaGroup').classList.remove('visible');
         fotoDataURL = null;
         document.getElementById('btnRegistrar').disabled = false;
         document.getElementById('btnRegistrar').textContent = '👥 REGISTRAR AUXILIAR';
@@ -716,18 +722,22 @@
         const email = document.getElementById('email').value.trim().toLowerCase();
         const fechaNacimiento = document.getElementById('fechaNacimiento').value;
         const curp = document.getElementById('curp').value.trim().toUpperCase();
-        const puesto = document.getElementById('puesto').value;
         const rol = document.getElementById('rol').value;
         const disciplina = document.getElementById('disciplina').value;
-        const horario = document.getElementById('horario').value.trim().toUpperCase();
         const emergenciaNombre = document.getElementById('emergenciaNombre').value.trim().toUpperCase();
         const emergenciaTelefono = document.getElementById('emergenciaTelefono').value.trim();
         const emergenciaParentesco = document.getElementById('emergenciaParentesco').value.trim().toUpperCase();
         const password = document.getElementById('password').value;
         const usuario = generarUsuario();
 
-        if (!nombre || !apPaterno || !telefono || !email || !fechaNacimiento || !puesto || !rol || !emergenciaNombre || !emergenciaTelefono || !emergenciaParentesco || !password) {
+        // Validaciones
+        if (!nombre || !apPaterno || !telefono || !email || !fechaNacimiento || !rol || !emergenciaNombre || !emergenciaTelefono || !emergenciaParentesco || !password) {
             alert('❌ COMPLETA TODOS LOS CAMPOS OBLIGATORIOS');
+            return;
+        }
+
+        if (rol === 'instructor' && !disciplina) {
+            alert('❌ SELECCIONA LA DISCIPLINA QUE IMPARTE EL INSTRUCTOR');
             return;
         }
 
@@ -745,13 +755,13 @@
             const uid = userCredential.user.uid;
             console.log('✅ Usuario creado en Auth');
 
-            // 2. Subir foto a Storage
+            // 2. Subir foto a Storage (usando putString para evitar CORS)
             let fotoURL = '';
             if (fotoDataURL) {
                 const storageRef = storage.ref().child(`fotos_auxiliares/${uid}.jpg`);
                 await storageRef.putString(fotoDataURL, 'data_url');
                 fotoURL = await storageRef.getDownloadURL();
-                console.log('✅ Foto subida');
+                console.log('✅ Foto subida a Storage');
             }
 
             // 3. Guardar en Firestore
@@ -765,10 +775,8 @@
                 email: email,
                 fechaNacimiento: fechaNacimiento,
                 curp: curp || '',
-                puesto: puesto,
                 rol: rol,
                 disciplina: disciplina || '',
-                horario: horario || '',
                 contactoEmergencia: {
                     nombre: emergenciaNombre,
                     telefono: emergenciaTelefono,
@@ -780,10 +788,11 @@
             });
             console.log('✅ Auxiliar guardado en Firestore');
 
+            // Cerrar sesión del nuevo usuario
             await auth.signOut();
             
             mostrarLoader(false);
-            mostrarModal(email, usuario, password, `${nombre} ${apPaterno}`);
+            mostrarModal(email, usuario, password, `${nombre} ${apPaterno}`, rol, disciplina);
 
         } catch (error) {
             console.error('❌ Error:', error);
@@ -791,6 +800,8 @@
             let mensaje = '';
             if (error.code === 'auth/email-already-in-use') {
                 mensaje = '❌ ESTE EMAIL YA ESTÁ REGISTRADO';
+            } else if (error.code === 'permission-denied') {
+                mensaje = '❌ ERROR DE PERMISOS. REVISA LAS REGLAS DE FIRESTORE';
             } else {
                 mensaje = '❌ ERROR: ' + error.message;
             }
